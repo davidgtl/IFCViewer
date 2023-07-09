@@ -4,7 +4,7 @@ import { observer } from "mobx-react"
 
 import './App.css'
 
-const App = observer(({state}) => {
+const App = observer(({ state }) => {
   return (
     <>
       <div>
