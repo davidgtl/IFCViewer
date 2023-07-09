@@ -1,0 +1,3 @@
+- get a basic cube in a viewport running with three.js
+- pick zustand vs mobx for state management
+- load a 3d model from an IFC file -- find sample files
