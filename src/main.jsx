@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import RootState from './state/RootState.js'
+import RootState from './state/RootState'
 import './index.css'
-import { configure as mobxconfig} from "mobx"
+import { configure as mobxconfig } from "mobx"
 
 // Turn on strict mode to generate runtime warnings
 mobxconfig({
@@ -19,6 +19,6 @@ const state = new RootState()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App state={ state }/>
+    <App state={state} />
   </React.StrictMode>,
 )
