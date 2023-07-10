@@ -1,24 +1,28 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { observer } from "mobx-react"
+import { useRef, useEffect } from 'react';
 
 import './App.css'
 
+
+
 const App = observer(({ state }) => {
+
+  const canvasContainerRef = useRef(null);
+
+  useEffect(() => {
+    const container = canvasContainerRef.current
+    container.appendChild(state.render.domElement)
+  }, [])
+
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
+      <div ref={canvasContainerRef} />
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => state.tick()}>
-          count is {state.count}
+        <button onClick={() => state.render.invalidate()}>
+          render count is {state.count}
         </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
