@@ -1,3 +1,2 @@
 - get a basic cube in a viewport running with three.js
 - load a 3d model from an IFC file -- find sample files
-- deploy react to static github page
