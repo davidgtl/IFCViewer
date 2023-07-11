@@ -1,7 +1,7 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { observer } from "mobx-react"
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react'
 
 import './App.css'
 
@@ -9,7 +9,7 @@ import './App.css'
 
 const App = observer(({ state }) => {
 
-  const canvasContainerRef = useRef(null);
+  const canvasContainerRef = useRef(null)
 
   useEffect(() => {
     const container = canvasContainerRef.current

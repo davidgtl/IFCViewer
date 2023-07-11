@@ -1,2 +1,3 @@
-- get a basic cube in a viewport running with three.js
+- make @/mathUtils clickable -- eslint
+- handle events onMouseWheel onKeyDown onTouchStart
 - load a 3d model from an IFC file -- find sample files
