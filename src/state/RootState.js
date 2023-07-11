@@ -1,16 +1,21 @@
-import { makeAutoObservable } from "mobx"
+import { makeObservable } from "mobx"
 import RenderState from "./RenderState"
+import UIState from "./UIState"
 
 class RootState {
-  count = 0
-  render
   constructor() {
+    
     this.render = new RenderState(this)
-    makeAutoObservable(this, { render: false })
+    this.ui = new UIState(this)
+
+    this.count = 0
+
+    makeObservable(this, {
+      count: true
+    })
   }
 
   tick() {
-    this.count++
     this.render.render()
   }
 }
