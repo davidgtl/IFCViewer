@@ -1,3 +1,3 @@
-- make @/mathUtils clickable -- eslint
-- handle events onMouseWheel onKeyDown onTouchStart
 - load a 3d model from an IFC file -- find sample files
+- handle events onMouseWheel onKeyDown onTouchStart
+- make @/mathUtils, @/* clickable -- eslint
