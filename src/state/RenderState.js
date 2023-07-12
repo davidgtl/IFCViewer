@@ -1,6 +1,7 @@
 import { makeObservable } from "mobx"
 import * as tjs from 'three'
 import { clampCircular, TAU, TAU4 } from "@/mathUtils"
+import { ACTION, hsTrack } from "./history"
 
 class RenderState {
 
@@ -32,19 +33,22 @@ class RenderState {
         const offT = e.target.getBoundingClientRect()
         const offX = e.clientX - offT.left
         const offY = e.clientY - offT.top
-      }
-      this.isOrbiting = true
-      this.orbitStartMousePos.set(e.screenX, e.screenY)
-      this.orbitStartCamAngle.copy(this.cameraAngle)
+        this.isOrbiting = true
+        this.orbitStartMousePos.set(e.screenX, e.screenY)
+        this.orbitStartCamAngle.copy(this.cameraAngle)
 
+        // insert sentinel action to be updated by mousemove
+        this.updateCamAngle.trackWith({ isCall: false })(this.cameraAngle.x, this.cameraAngle.y)
+      }
     })
 
     window.addEventListener('mouseup', (e) => {
-      this.isOrbiting = false
+      if (this.isOrbiting) {
+        this.isOrbiting = false
+      }
     })
 
     window.addEventListener('mousemove', (e) => {
-
       if (this.isOrbiting) {
 
         // cameraAngle = clamp(cameraAngleStart + mouseDelta * speed) 
@@ -54,13 +58,11 @@ class RenderState {
         this.cameraAngle.copy(this.orbitStartCamAngle).add(mouseDelta)
 
         // on a sphere: TAU x = full ecuator, -TAU4 y = south pole, TAU4 y = north pole
-        this.cameraAngle.x = clampCircular(this.cameraAngle.x, 0, TAU)
-        this.cameraAngle.y = tjs.MathUtils.clamp(this.cameraAngle.y, -TAU4, TAU4)
-
-        this.updateCamera()
-        this.invalidate()
+        this.updateCamAngle.trackWith({ isOverwrite: true })(
+          clampCircular(this.cameraAngle.x, 0, TAU),
+          tjs.MathUtils.clamp(this.cameraAngle.y, -TAU4, TAU4)
+        )
       }
-
     })
 
     // TODO: events: resize, wheel, touch...
@@ -84,8 +86,16 @@ class RenderState {
     this.scene.add(light1)
 
     makeObservable(this, {
-      render: true
+      render: true,
+      updateCamAngle: true
     })
+
+    this.history = hsTrack(this, {
+      updateCamAngle: ACTION
+    })
+
+    // initialize history with current value
+    this.updateCamAngle.trackWith({ isCall: false })(this.cameraAngle.x, this.cameraAngle.y)
 
     this._queueRender()
   }
@@ -98,6 +108,20 @@ class RenderState {
     this.camera.position.set(xc * yc, ys, xs * yc)
     this.camera.position.multiplyScalar(this.focusDistance)
     this.camera.lookAt(this.focusPoint)
+  }
+
+  prevCamAngle() {
+    this.history.updateCamAngle.tryPrev().call()
+  }
+
+  nextCamAngle() {
+    this.history.updateCamAngle.tryNext().call()
+  }
+
+  updateCamAngle(x, y) {
+    this.cameraAngle.set(x, y)
+    this.updateCamera()
+    this.invalidate()
   }
 
   get domElement() {

@@ -24,6 +24,15 @@ const App = observer(({ state }) => {
         <button onClick={() => state.render.invalidate()}>
           render count is {state.count}
         </button>
+        <button onClick={() => { state.render.updateCamAngle(2, 0.5) }}>
+          cam change
+        </button>
+        <button onClick={() => { state.render.prevCamAngle() }}>
+          cam prev
+        </button>
+        <button onClick={() => { state.render.nextCamAngle() }}>
+          cam next
+        </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
