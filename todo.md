@@ -1,3 +1,4 @@
-- make @/mathUtils clickable -- eslint
+- viewpoint history
 - handle events onMouseWheel onKeyDown onTouchStart
+- make @/mathUtils, @/* clickable -- eslint
 - load a 3d model from an IFC file -- find sample files
