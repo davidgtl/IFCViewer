@@ -20,7 +20,7 @@ const App = observer(({ state }) => {
     <>
       <div ref={canvasContainerRef} />
       <h1>Vite + React</h1>
-      <div className="card">
+      <div className="card" style={{'maxWidth': '640px'}}>
         <button onClick={() => state.render.invalidate()}>
           render count is {state.count}
         </button>
