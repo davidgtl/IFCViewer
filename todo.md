@@ -1,2 +1,6 @@
-- load a 3d model from an IFC file -- find sample files
-- handle events onMouseWheel onKeyDown onTouchStart
+- event parse the IFC file into triangles
+- transforms buttons to actual UI
+- UI: background, button, coarse-fine slider, state symbol
+- touchEvents, try on mobile
+- scalable movable panels? breadcrumbs for each state field/action?
+- keyboard navigation + vimmode?

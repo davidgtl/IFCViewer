@@ -33,6 +33,12 @@ const App = observer(({ state }) => {
         <button onClick={() => { state.render.nextCamAngle() }}>
           cam next
         </button>
+        <button onClick={() => { state.ifcParser.loadFromURL("./samples/AC20-Institute-Var-2.ifc") }}>
+          load Institute sample
+        </button>
+        <button onClick={() => { state.ifcParser.loadFromURL("./samples/AC20-FZK-Haus.ifc") }}>
+          load Haus sample
+        </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>

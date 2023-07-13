@@ -75,6 +75,35 @@ class RenderState {
     this.theCube = new tjs.Mesh(geometry, material)
     this.scene.add(this.theCube)
 
+    const geometryCustom = new tjs.BufferGeometry();
+
+    var vertices = new Float32Array(4 * 3);
+
+    var cv = 0
+    const pushVertex = (...values) => {
+      for (const v in values) {
+        vertices[cv] = values[v]
+        cv++
+      }
+    }
+    pushVertex(-2.0, -2.0, 2.0) // v0
+    pushVertex(2.0, -2.0, 2.0) // v1
+    pushVertex(2.0, 2.0, 2.0) // v2
+    pushVertex(-2.0, 2.0, 2.0) // v3
+
+    const indices = [
+      0, 1, 2,
+      // 2, 3, 0,
+    ];
+
+
+    geometryCustom.setIndex(indices);
+    geometryCustom.setAttribute('position', new tjs.BufferAttribute(vertices, 3));
+
+    const materialCustom = new tjs.MeshBasicMaterial({ color: 0xCC5511 });
+    const mesh = new tjs.Mesh(geometryCustom, materialCustom);
+    this.scene.add(mesh)
+
     const axesHelper = new tjs.AxesHelper(5)
     this.scene.add(axesHelper)
 
