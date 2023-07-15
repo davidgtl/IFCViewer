@@ -59,9 +59,9 @@ class IFCParserState {
     this.points = new Float32Array(pointCount * 3) // check: always 3D points?
     this.faces = null
 
-    faceIndexes = triangulatePotato(this.points, polyloopIndexes)
+    triangleIndexes.push(...triangulatePotato(this.points, polyloopIndexes))
 
-    geometryCustom.setIndex(indices);
+    geometryCustom.setIndex(triangleIndexes);
     geometryCustom.setAttribute('position', new tjs.BufferAttribute(vertices, 3));
 
     const materialCustom = new tjs.MeshBasicMaterial({ color: 0xCC5511 });
