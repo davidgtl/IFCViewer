@@ -43,7 +43,8 @@ class IFCParserState {
       CARTESIANPOINT #m => 
         POLYLOOP =>
           FACEOUTERBOUND =>
-            FACE
+            FACE =>
+              IFCCLOSEDSHELL
     */
 
     // gather metrics to allocate buffers
@@ -57,16 +58,39 @@ class IFCParserState {
     console.log("polyloopCount: ", polyloopCount);
 
     this.points = new Float32Array(pointCount * 3) // check: always 3D points?
-    this.faces = null
 
-    triangleIndexes.push(...triangulatePotato(this.points, polyloopIndexes))
+    const pointIdToIndex = {}
+    let i = 0
+    for (const pointGroups of this.fileContent.matchAll(/^#(\d+)=\s?IFCCARTESIANPOINT\(\((.*?),(.*?),(.*?)\)\);$/gm)) {
+      pointIdToIndex[pointGroups[1]] = i
+      this.points[i] = parseFloat(pointGroups[2])
+      this.points[i + 1] = parseFloat(pointGroups[3])
+      this.points[i + 2] = parseFloat(pointGroups[4])
+      // console.log("POINT:", pointGroups[1], this.points[i], this.points[i+1],this.points[i+2])
+      i += 3
+    }
 
-    geometryCustom.setIndex(triangleIndexes);
-    geometryCustom.setAttribute('position', new tjs.BufferAttribute(vertices, 3));
+    this.faces = []
+
+    for (const polyloopGroups of this.fileContent.matchAll(/^#(\d+)=\s?IFCPOLYLOOP\(\((.*?)\)\);$/gm)) {
+      const polyloopIndexes = []
+      for (const pointIndexGroups of polyloopGroups[2].matchAll(/#(\d+)/g)) {
+        const vertexIndex = pointIdToIndex[pointIndexGroups[1]]
+        polyloopIndexes.push(vertexIndex)
+        // console.log("POLY", polyloopGroups[1], "POINT:", pointIndexGroups[1], "vertexIndex", vertexIndex, this.points[vertexIndex], this.points[vertexIndex + 1], this.points[vertexIndex + 2])
+      }
+      this.faces.push(...triangulatePotato(this.points, polyloopIndexes))
+    }
+
+    console.log("loaded", this.faces.length, "indexes")
+
+    const geometryCustom = new tjs.BufferGeometry();
+    geometryCustom.setIndex(this.faces);
+    geometryCustom.setAttribute('position', new tjs.BufferAttribute(this.points, 3));
 
     const materialCustom = new tjs.MeshBasicMaterial({ color: 0xCC5511 });
     const mesh = new tjs.Mesh(geometryCustom, materialCustom);
-    this.scene.add(mesh)
+    this.root.render.scene.add(mesh)
 
   }
 

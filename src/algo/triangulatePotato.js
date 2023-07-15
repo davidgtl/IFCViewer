@@ -4,7 +4,7 @@ import * as tjs from 'three'
   Chop polygon into non-thin triangles
   -- similar to earcut, but greedy
   @param vertices - array of individual x,y,z coordinates
-  @param polyloop - array of indexes into vertices (divided by 3),
+  @param polyloop - array of indexes into vertices,
                     last index is assumed connected to first index
 */
 function triangulatePotato(vertices, polyloop) {
@@ -32,7 +32,10 @@ function triangulatePotato(vertices, polyloop) {
     const sideRatio = Math.max(midNode.lLength, midNode.rLength)
       / Math.min(midNode.lLength, midNode.rLength)
 
-    return signedArea > 0 && -0.95 <= cosAngle && cosAngle <= 0.99 && sideRatio <= 10
+    // console.log("midNode:", midNode)
+    // console.log("cosAngle:", cosAngle, "sideRatio:", sideRatio)
+
+    return -0.95 <= cosAngle && cosAngle <= 0.99 && sideRatio <= 100
   }
 
   const isPointInside = (p, midNode) => {
@@ -62,8 +65,12 @@ function triangulatePotato(vertices, polyloop) {
     midNode.rLength = r.length()
     l.divideScalar(midNode.lLength)
     r.divideScalar(midNode.rLength)
+    // console.log("lr", midNode)
   }
 
+  const componentsFromPoly = (i) => [
+    vertices[polyloop[i] + 0], vertices[polyloop[i] + 1], vertices[polyloop[i] + 2]
+  ]
 
   let head = null
   let curr = null
@@ -72,23 +79,27 @@ function triangulatePotato(vertices, polyloop) {
   {
     const unitX = new tjs.Vector3()
     const unitY = new tjs.Vector3()
+    const mid = new tjs.Vector3()
     {
-      const mid = new tjs.Vector3(vertices[3], vertices[4], vertices[5])
-      unitY.set(vertices[0], vertices[1], vertices[2]).sub(mid) // left vertex
-      unitX.set(vertices[6], vertices[7], vertices[8]).sub(mid) // right vertex
+      // use first triangle
+      mid.set(...componentsFromPoly(1))
+      unitY.set(...componentsFromPoly(0)).sub(mid) // left vertex
+      unitX.set(...componentsFromPoly(2)).sub(mid) // right vertex
+      // console.log("prenormal", "unitX", unitX, "unitY", unitY, "mid", mid)
 
       // build perpendicular axis with cross product
       unitX.normalize()
-      const normal = new tjs.Vector3().crossVectors(unitX, unitY)
+      const normal = new tjs.Vector3().crossVectors(unitX, unitY).negate()
       unitY.crossVectors(unitX, normal).normalize()
     }
+    // console.log("unitX", unitX, "unitY", unitY)
 
     const sentinel = {}
     curr = sentinel
 
+    // console.log("polyloop.length:", polyloop.length)
     for (const i in polyloop) {
-      const index = polyloop[i] * 3
-      mid.set(vertices[index + 0], vertices[index + 1], vertices[index + 2])
+      mid.set(...componentsFromPoly(i))
 
       curr.next = {
         value: new tjs.Vector2(mid.dot(unitX), mid.dot(unitY)),
@@ -99,6 +110,7 @@ function triangulatePotato(vertices, polyloop) {
         r: new tjs.Vector2(), rLength: null,
       }
       curr = curr.next
+      // console.log("created", mid, "at", curr.value)
     }
 
     // complete the chain
@@ -111,6 +123,8 @@ function triangulatePotato(vertices, polyloop) {
     do {
       // cache l and r vectors since they used many times
       calculateLR(curr)
+      // console.log("l:", curr.l, "r:", curr.r)
+      curr = curr.next
     } while (curr !== head)
 
   }
@@ -127,21 +141,27 @@ function triangulatePotato(vertices, polyloop) {
       has no points inside 
     */
 
+    const mid = midNode.value
+    const left = midNode.prev.value
+    const right = midNode.next.value
     // assumes clockwise direction left > mid > right
     // the magnitude is not needed, only its sign
     const signedArea = (mid.x - right.x) * (left.y - mid.y)
       - (left.x - mid.x) * (mid.y - right.y) // * 0.5
 
-    if (signedArea <= 0) return false
+    // console.log("signedArea", signedArea)
+    if (signedArea >= 0) return false // FIXME: flip two signs to check negative
 
-    let curr = head
+    let curr = midNode
     do {
       // TODO: maybe sort by X/Y and check bounding box first
-      if (isPointInside(curr.value, midNode)) {
+      if (curr !== midNode && curr !== midNode.prev
+        && curr !== midNode.next && isPointInside(curr.value, midNode)) {
+        // console.log("point inside", curr.value)
         return false
       }
       curr = curr.next
-    } while (curr !== head);
+    } while (curr !== midNode);
 
     return true
   }
@@ -155,9 +175,10 @@ function triangulatePotato(vertices, polyloop) {
   // should be O(n)-ish
   while (curr.next.next !== curr.prev) { // more than one triangle
 
-    noTrianglesFound = true
+    let noTrianglesFound = true
     const startedAt = curr
     do { // do the loop once
+      // console.log("step",analyticsSteps)
       analyticsSteps++
       if (analyticsSteps > analyticsSteps_MAX) {
         throw new Error("this smells like an infinite loop edge case")
@@ -178,6 +199,7 @@ function triangulatePotato(vertices, polyloop) {
     curr = curr.prev
 
     if (noTrianglesFound) {
+      return triangleIndexes
       throw Error("no isBitesized triangles found")
     }
 
