@@ -2,10 +2,10 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { observer } from "mobx-react"
 import { useRef, useEffect } from 'react'
+import DynButton from "@/components/DynButton"
+import { svgs }  from 'svgSymbols'
 
 import './App.css'
-
-
 
 const App = observer(({ state }) => {
 
@@ -20,7 +20,7 @@ const App = observer(({ state }) => {
     <>
       <div ref={canvasContainerRef} />
       <h1>Vite + React</h1>
-      <div className="card" style={{'maxWidth': '640px'}}>
+      <div className="card" style={{ 'maxWidth': '640px' }}>
         <button onClick={() => state.render.invalidate()}>
           render count is {state.count}
         </button>
@@ -39,6 +39,14 @@ const App = observer(({ state }) => {
         <button onClick={() => { state.ifcParser.loadFromURL("./samples/AC20-FZK-Haus.ifc") }}>
           load Haus sample
         </button>
+        <button onClick={() => { state.objParser.loadFromURL("./samples/20221025SantAntiniDelAbad_Llombay1M_CC0.obj") }}>
+          load Church sample
+        </button>
+        <DynButton action={{
+          name: "Focus Object",
+          tick: () => console.log("Focusing Object"),
+          symbol: svgs.focusObject
+        }} />
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>

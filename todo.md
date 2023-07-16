@@ -1,6 +1,7 @@
-- event parse the IFC file into triangles
-- transforms buttons to actual UI
+- reuse svgs
+- transform buttons to actual UI
 - UI: background, button, coarse-fine slider, state symbol
 - touchEvents, try on mobile
 - scalable movable panels? breadcrumbs for each state field/action?
+- event parse the IFC file into triangles
 - keyboard navigation + vimmode?
