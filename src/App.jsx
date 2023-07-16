@@ -3,7 +3,7 @@ import viteLogo from '/vite.svg'
 import { observer } from "mobx-react"
 import { useRef, useEffect } from 'react'
 import DynButton from "@/components/DynButton"
-import { svgs }  from 'svgSymbols'
+import { svgs } from 'svgSymbols'
 
 import './App.css'
 
@@ -18,6 +18,12 @@ const App = observer(({ state }) => {
 
   return (
     <>
+      {/* make svgs under assets/symbols available via use href="#symbol_nameHere" */}
+      <div style={{ display: "none" }}>
+        {Object.keys(svgs).map((k) => (
+          <div key={k} dangerouslySetInnerHTML={svgs[k]} />
+        ))}
+      </div>
       <div ref={canvasContainerRef} />
       <h1>Vite + React</h1>
       <div className="card" style={{ 'maxWidth': '640px' }}>
@@ -42,11 +48,7 @@ const App = observer(({ state }) => {
         <button onClick={() => { state.objParser.loadFromURL("./samples/20221025SantAntiniDelAbad_Llombay1M_CC0.obj") }}>
           load Church sample
         </button>
-        <DynButton action={{
-          name: "Focus Object",
-          tick: () => console.log("Focusing Object"),
-          symbol: svgs.focusObject
-        }} />
+        <DynButton action={state.actions.focusObject} />
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>

@@ -41,6 +41,7 @@ export default function processSymbols() {
       //   });
       // });
       const focusObject = fs.readFileSync("./src/assets/symbols/focusObject.svg")
+      // FIXME: remove fill=* from everywhere, add id="symbol_name" to root
       if (id === resolvedVirtualModuleId) {
         return `export const svgs = {
           focusObject:  { __html: \`${focusObject}\` }

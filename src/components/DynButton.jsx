@@ -21,8 +21,9 @@ const DynButton = observer(({ action }) => {
 
   return (
     <button onClick={action.tick}>
-      <div dangerouslySetInnerHTML={action.symbol}/>
+      <svg><use href={action.symbolId} /></svg>
       <span>{action.name}</span>
+
     </button>
   )
 })

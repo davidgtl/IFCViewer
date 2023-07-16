@@ -170,6 +170,10 @@ class RenderState {
       updateCamAngle: ACTION
     })
 
+    root.registerActions(this, {
+      focusObject: {}
+    })
+
     // initialize history with current value
     this.updateCamAngle.trackWith({ isCall: false })(this.cameraAngle.x, this.cameraAngle.y)
 
@@ -198,6 +202,18 @@ class RenderState {
     this.cameraAngle.set(x, y)
     this.updateCamera()
     this.invalidate()
+  }
+
+  focusObject(){
+    // find bounding box and a safe radius
+    const bbox = new tjs.Box3().setFromObject(this.scene.children.at(-1))
+    bbox.getCenter(this.focusPoint)
+    const bsphere = new tjs.Sphere()
+    bbox.getBoundingSphere(bsphere)
+
+    this.focusDistance = bsphere.radius;
+
+    this.updateCamera()
   }
 
   get domElement() {
