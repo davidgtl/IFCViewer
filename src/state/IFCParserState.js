@@ -48,6 +48,7 @@ class IFCParserState {
     */
 
     // gather metrics to allocate buffers
+    // TODO: merge into single loop with switch
     const pointCount = (this.fileContent.match(/#.*?POINT/g) || []).length;
     console.log("pointCount: ", pointCount);
 
@@ -59,6 +60,7 @@ class IFCParserState {
 
     this.points = new Float32Array(pointCount * 3) // check: always 3D points?
 
+    //TODO: replace regexes with event emmitters and handlers for IFC*
     const pointIdToIndex = {}
     let i = 0
     for (const pointGroups of this.fileContent.matchAll(/^#(\d+)=\s?IFCCARTESIANPOINT\(\((.*?),(.*?),(.*?)\)\);$/gm)) {
@@ -77,21 +79,24 @@ class IFCParserState {
       for (const pointIndexGroups of polyloopGroups[2].matchAll(/#(\d+)/g)) {
         const vertexIndex = pointIdToIndex[pointIndexGroups[1]]
         polyloopIndexes.push(vertexIndex)
-        // console.log("POLY", polyloopGroups[1], "POINT:", pointIndexGroups[1], "vertexIndex", vertexIndex, this.points[vertexIndex], this.points[vertexIndex + 1], this.points[vertexIndex + 2])
+        console.log("POLY", polyloopGroups[1], "POINT:", pointIndexGroups[1], "vertexIndex", vertexIndex, this.points[vertexIndex], this.points[vertexIndex + 1], this.points[vertexIndex + 2])
       }
       this.faces.push(...triangulatePotato(this.points, polyloopIndexes))
+      // if(this.faces.length == 12) break
     }
 
     console.log("loaded", this.faces.length, "indexes")
 
     const geometryCustom = new tjs.BufferGeometry();
-    geometryCustom.setIndex(this.faces);
+    console.log(this.faces)
+    geometryCustom.setIndex(this.faces)
     geometryCustom.setAttribute('position', new tjs.BufferAttribute(this.points, 3));
 
-    const materialCustom = new tjs.MeshBasicMaterial({ color: 0xCC5511 });
+    const materialCustom = new tjs.MeshBasicMaterial({ color: 0xCC5511, side: tjs.DoubleSide });
     const mesh = new tjs.Mesh(geometryCustom, materialCustom);
     this.root.render.scene.add(mesh)
 
+    //#31465 wall with window holes
   }
 
 }

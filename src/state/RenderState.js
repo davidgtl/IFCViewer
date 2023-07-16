@@ -17,7 +17,7 @@ class RenderState {
     // camera
     this.camera = new tjs.PerspectiveCamera(75, 640 / 480, 0.1, 1000)
     this.focusPoint = new tjs.Vector3(0, 0, 0)
-    this.focusDistance = 5
+    this.focusDistance = 20
     this.cameraAngle = new tjs.Vector2(0, 0) // pitch, yaw (offset in radians plane X, Y)
     this.updateCamera()
 
@@ -27,19 +27,50 @@ class RenderState {
     this.orbitStartMousePos = new tjs.Vector2()
     this.orbitStartCamAngle = new tjs.Vector2()
 
+    // shifting -- click and drag to translate
+    this.isOrbiting = false
+    this.orbitSpeed = new tjs.Vector2(0.01, 0.01)
+    this.orbitStartMousePos = new tjs.Vector2()
+    this.orbitStartCamAngle = new tjs.Vector2()
+
+    // input state
+    this.hasMouseFocus = false
+    this.keyStates = {
+      "Control": false,
+      "Alt": false,
+      "Shift": false,
+    }
+
     // ui events
     window.addEventListener('mousedown', (e) => {
-      if (e.target == this.renderer.domElement) {
+      if (!this.hasMouseFocus) return
+
+      if (this.keyStates["Alt"]) {
+        this.isOrbiting = true
+
         const offT = e.target.getBoundingClientRect()
         const offX = e.clientX - offT.left
         const offY = e.clientY - offT.top
-        this.isOrbiting = true
         this.orbitStartMousePos.set(e.screenX, e.screenY)
         this.orbitStartCamAngle.copy(this.cameraAngle)
 
         // insert sentinel action to be updated by mousemove
         this.updateCamAngle.trackWith({ isCall: false })(this.cameraAngle.x, this.cameraAngle.y)
       }
+
+      if (this.keyStates["Shift"]) {
+        this.isOrbiting = true
+
+        const offT = e.target.getBoundingClientRect()
+        const offX = e.clientX - offT.left
+        const offY = e.clientY - offT.top
+        this.orbitStartMousePos.set(e.screenX, e.screenY)
+        this.orbitStartCamAngle.copy(this.cameraAngle)
+
+        // insert sentinel action to be updated by mousemove
+        this.updateCamAngle.trackWith({ isCall: false })(this.cameraAngle.x, this.cameraAngle.y)
+      }
+
     })
 
     window.addEventListener('mouseup', (e) => {
@@ -49,6 +80,8 @@ class RenderState {
     })
 
     window.addEventListener('mousemove', (e) => {
+      this.hasMouseFocus = e.target == this.renderer.domElement
+
       if (this.isOrbiting) {
 
         // cameraAngle = clamp(cameraAngleStart + mouseDelta * speed) 
@@ -62,6 +95,18 @@ class RenderState {
           clampCircular(this.cameraAngle.x, 0, TAU),
           tjs.MathUtils.clamp(this.cameraAngle.y, -TAU4, TAU4)
         )
+      }
+    })
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key in this.keyStates) {
+        this.keyStates[e.key] = true
+      }
+
+    })
+    window.addEventListener('keyup', (e) => {
+      if (e.key in this.keyStates) {
+        this.keyStates[e.key] = false
       }
     })
 
@@ -86,23 +131,22 @@ class RenderState {
         cv++
       }
     }
-    pushVertex(-2.0, -2.0, 2.0) // v0
-    pushVertex(2.0, -2.0, 2.0) // v1
-    pushVertex(2.0, 2.0, 2.0) // v2
-    pushVertex(-2.0, 2.0, 2.0) // v3
+    pushVertex(-3.0, 13, 0) // v0
+    pushVertex(12, 10, 0) // v1
+    pushVertex(15, 13, 0) // v2
 
     const indices = [
-      0, 1, 2,
+      2, 0, 1,
       // 2, 3, 0,
     ];
 
 
-    geometryCustom.setIndex(indices);
-    geometryCustom.setAttribute('position', new tjs.BufferAttribute(vertices, 3));
+    // geometryCustom.setIndex(indices);
+    // geometryCustom.setAttribute('position', new tjs.BufferAttribute(vertices, 3));
 
-    const materialCustom = new tjs.MeshBasicMaterial({ color: 0xCC5511 });
-    const mesh = new tjs.Mesh(geometryCustom, materialCustom);
-    this.scene.add(mesh)
+    // const materialCustom = new tjs.MeshBasicMaterial({ color: 0xCC5511 });
+    // const mesh = new tjs.Mesh(geometryCustom, materialCustom);
+    // this.scene.add(mesh)
 
     const axesHelper = new tjs.AxesHelper(5)
     this.scene.add(axesHelper)
@@ -113,6 +157,9 @@ class RenderState {
     const light1 = new tjs.PointLight(0xffeeff, 100, 100)
     light1.position.set(5, 5, 5)
     this.scene.add(light1)
+
+    const directionalLight = new tjs.DirectionalLight(0xffffff, 0.5);
+    this.scene.add(directionalLight);
 
     makeObservable(this, {
       render: true,

@@ -199,6 +199,7 @@ function triangulatePotato(vertices, polyloop) {
     curr = curr.prev
 
     if (noTrianglesFound) {
+      console.log("no isBitesized triangles found")
       return triangleIndexes
       throw Error("no isBitesized triangles found")
     }
