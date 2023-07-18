@@ -55,7 +55,7 @@ class RenderState {
         this.orbitStartCamAngle.copy(this.cameraAngle)
 
         // insert sentinel action to be updated by mousemove
-        this.updateCamAngle.trackWith({ isCall: false })(this.cameraAngle.x, this.cameraAngle.y)
+        this.updateCamAngle.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
       }
 
       if (this.keyStates["Shift"]) {
@@ -68,7 +68,7 @@ class RenderState {
         this.orbitStartCamAngle.copy(this.cameraAngle)
 
         // insert sentinel action to be updated by mousemove
-        this.updateCamAngle.trackWith({ isCall: false })(this.cameraAngle.x, this.cameraAngle.y)
+        this.updateCamAngle.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
       }
 
     })
@@ -115,31 +115,6 @@ class RenderState {
     // scene setup
     this.scene = new tjs.Scene()
     this.scene.background = new tjs.Color(0x101010);
-    const geometry = new tjs.BoxGeometry(1, 1, 1)
-    const material = new tjs.MeshLambertMaterial({ color: 0x11AA11 })
-    this.theCube = new tjs.Mesh(geometry, material)
-    this.scene.add(this.theCube)
-
-    const geometryCustom = new tjs.BufferGeometry();
-
-    var vertices = new Float32Array(4 * 3);
-
-    var cv = 0
-    const pushVertex = (...values) => {
-      for (const v in values) {
-        vertices[cv] = values[v]
-        cv++
-      }
-    }
-    pushVertex(-3.0, 13, 0) // v0
-    pushVertex(12, 10, 0) // v1
-    pushVertex(15, 13, 0) // v2
-
-    const indices = [
-      2, 0, 1,
-      // 2, 3, 0,
-    ];
-
 
     // geometryCustom.setIndex(indices);
     // geometryCustom.setAttribute('position', new tjs.BufferAttribute(vertices, 3));
@@ -161,6 +136,13 @@ class RenderState {
     const directionalLight = new tjs.DirectionalLight(0xffffff, 0.5);
     this.scene.add(directionalLight);
 
+    // objects
+    const geometry = new tjs.BoxGeometry(1, 1, 1)
+    const material = new tjs.MeshLambertMaterial({ color: 0x11AA11 })
+    this.theCube = new tjs.Mesh(geometry, material)
+    this.scene.add(this.theCube)
+
+
     makeObservable(this, {
       render: true,
       updateCamAngle: true
@@ -170,12 +152,14 @@ class RenderState {
       updateCamAngle: ACTION
     })
 
-    root.registerActions(this, {
-      focusObject: {}
+    root.registerModule(this, {
+      actions: {
+        focusObject: {}
+      }
     })
 
-    // initialize history with current value
-    this.updateCamAngle.trackWith({ isCall: false })(this.cameraAngle.x, this.cameraAngle.y)
+    // initialize history with dummy call of current value
+    this.updateCamAngle.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
 
     this._queueRender()
   }
@@ -204,7 +188,7 @@ class RenderState {
     this.invalidate()
   }
 
-  focusObject(){
+  focusObject() {
     // find bounding box and a safe radius
     const bbox = new tjs.Box3().setFromObject(this.scene.children.at(-1))
     bbox.getCenter(this.focusPoint)

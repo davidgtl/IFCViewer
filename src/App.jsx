@@ -3,7 +3,10 @@ import viteLogo from '/vite.svg'
 import { observer } from "mobx-react"
 import { useRef, useEffect } from 'react'
 import DynButton from "@/components/DynButton"
+import DynSlider from "@/components/DynSlider"
+import DynText from "@/components/DynText"
 import { svgs } from 'svgSymbols'
+import rootState from "./state/rootState"
 
 import './App.css'
 
@@ -13,7 +16,7 @@ const App = observer(({ state }) => {
 
   useEffect(() => {
     const container = canvasContainerRef.current
-    container.appendChild(state.render.domElement)
+    container.appendChild(rootState.render.domElement)
   }, [])
 
   return (
@@ -24,31 +27,34 @@ const App = observer(({ state }) => {
           <div key={k} dangerouslySetInnerHTML={svgs[k]} />
         ))}
       </div>
+      <DynText value={rootState.someText} state={rootState}/>
+      <DynSlider/>
       <div ref={canvasContainerRef} />
       <h1>Vite + React</h1>
       <div className="card" style={{ 'maxWidth': '640px' }}>
-        <button onClick={() => state.render.invalidate()}>
-          render count is {state.count}
+        <button onClick={() => rootState.render.invalidate()}>
+          render count is {rootState.count}
         </button>
-        <button onClick={() => { state.render.updateCamAngle(2, 0.5) }}>
+        <button onClick={() => { rootState.render.updateCamAngle(2, 0.5) }}>
           cam change
         </button>
-        <button onClick={() => { state.render.prevCamAngle() }}>
+        <button onClick={() => { rootState.render.prevCamAngle() }}>
           cam prev
         </button>
-        <button onClick={() => { state.render.nextCamAngle() }}>
+        <button onClick={() => { rootState.render.nextCamAngle() }}>
           cam next
         </button>
-        <button onClick={() => { state.ifcParser.loadFromURL("./samples/AC20-Institute-Var-2.ifc") }}>
+        <button onClick={() => { rootState.ifcParser.loadFromURL("./samples/AC20-Institute-Var-2.ifc") }}>
           load Institute sample
         </button>
-        <button onClick={() => { state.ifcParser.loadFromURL("./samples/AC20-FZK-Haus.ifc") }}>
+        <button onClick={() => { rootState.ifcParser.loadFromURL("./samples/AC20-FZK-Haus.ifc") }}>
           load Haus sample
         </button>
-        <button onClick={() => { state.objParser.loadFromURL("./samples/20221025SantAntiniDelAbad_Llombay1M_CC0.obj") }}>
+        <button onClick={() => { rootState.objParser.loadFromURL("./samples/20221025SantAntiniDelAbad_Llombay1M_CC0.obj") }}>
           load Church sample
         </button>
-        <DynButton action={state.actions.focusObject} />
+        {/* <DynButton action={state.actions.focusObject} /> */}
+        <DynSlider/>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>

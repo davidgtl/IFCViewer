@@ -11,4 +11,8 @@ function condShort(...cases) {
   throw new Error("No default was provided")
 }
 
-export default { condShort }
+function codeDoc(dummyArgs) {
+  return;
+}
+
+export default { condShort, codeDoc }
