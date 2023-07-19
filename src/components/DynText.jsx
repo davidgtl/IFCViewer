@@ -1,22 +1,18 @@
-
-import { action } from "mobx"
 import { observer } from "mobx-react"
-import { useState, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 
-const DynText = ({ state }) => {
-
-  const [value, setValue] = useState(70);
-
+/**
+  Dynamic Text
+*/
+const DynText = observer(({ property }) => {
   return (
-    <div className="dyntext">
+    <div className="inputText elem">
       <input label="Name"
-        value={value}
-        onChange={action(e => setValue(e.target.value))}
-        onFocus={(e) => {
-          console.log('Focused on input');
-        }}></input>
+        value={property.value}
+        onChange={action(e => property.value = e.target.value)}
+      ></input>
     </div>
   )
-}
+})
 
 export default DynText

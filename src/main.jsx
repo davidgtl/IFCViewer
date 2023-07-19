@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import RootState from './state/rootState.js'
 import './index.css'
 import { configure as mobxconfig } from "mobx"
 

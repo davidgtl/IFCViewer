@@ -17,12 +17,19 @@ function codeDoc(dummyArgs) {
 
 function defaultsFor(object, defaults) {
 
-  for (key in defaults) {
+  for (const key in defaults) {
     if (object[key] === undefined) {
       object[key] = defaults[key]
     }
   }
+}
 
+function defaultValue(value, defaultValue) {
+  if (value === undefined) {
+    return defaultValue
+  } else {
+    return value
+  }
 }
 
 /**
@@ -49,22 +56,39 @@ const PATH = new Proxy(
   }
 );
 
-function getPath(object, keys){
+function getPath(object, keys) {
   let res = object
-  for(const key in keys){
+  for (const key in keys) {
     res = res[key]
   }
   return res
 }
 
-function setPath(object, keys, value){
+/**
+  create a view over the array without copying
+  both indexes are inclusive
+  negative values are calculated from the end
+*/
+function* slice(array, startIndex, endIndex) {
+  if (startIndex < 0) {
+    startIndex = Math.Max(0, array.length + startIndex)
+  }
+  if (endIndex < 0) {
+    endIndex = Math.Max(0, array.length + endIndex)
+  }
+  for (let i = startIndex; i <= endIndex; i++) {
+    yield array[i]
+  }
+}
+
+function setPath(object, keys, value) {
   let res = object
-  for(const key in keys){
+  for (const key of slice(keys, 0, -2)) {
     res = res[key]
   }
-  return res
+  return res[keys.at(-1)]
 }
 
 
 
-export default { condShort, codeDoc }
+export default { condShort, codeDoc, defaultsFor, defaultValue, PATH, getPath, slice, setPath }

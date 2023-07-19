@@ -18,7 +18,7 @@ export default function processSymbols() {
       for (const file of files) {
         const name = file.substring(0, file.length - 4)
         const svgContent = fs.readFileSync(`./src/assets/symbols/${name}.svg`).toString()
-        .replace(/(<svg.*?)>/, `$1 id="symbol_${name}">`).replace(/<text.*<\/text>/, "")
+        .replace(/(<svg.*?)>/, `$1 id="symbol_${name}">`)
         keyValues.push(`${name}:  { __html: \`${svgContent}\` }`)
       }
 

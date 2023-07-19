@@ -132,8 +132,9 @@ function hsTrack(target, props) {
           return calling(currentArgs)
         }
       }
-
+      
       target[key] = wrapper
+      target.history = history
 
     } else {
       throw new Error('Not Implemented')

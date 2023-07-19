@@ -1,6 +1,6 @@
-import { makeObservable } from "mobx"
+import { makeObservable, autorun, action } from "mobx"
 import * as tjs from 'three'
-import { clampCircular, TAU, TAU4 } from "@/mathUtils"
+import { clampCircular, TAU, TAU2, TAU4 } from "@/mathUtils"
 import { ACTION, hsTrack } from "./history"
 
 class RenderState {
@@ -23,15 +23,19 @@ class RenderState {
 
     // orbiting -- click and drag to rotate
     this.isOrbiting = false
+    this.isOrbitMode = true
     this.orbitSpeed = new tjs.Vector2(0.01, 0.01)
     this.orbitStartMousePos = new tjs.Vector2()
     this.orbitStartCamAngle = new tjs.Vector2()
 
-    // shifting -- click and drag to translate
-    this.isOrbiting = false
-    this.orbitSpeed = new tjs.Vector2(0.01, 0.01)
-    this.orbitStartMousePos = new tjs.Vector2()
-    this.orbitStartCamAngle = new tjs.Vector2()
+    // panning -- click and drag to translate
+    this.isPanMode = false
+    this.isPanning = false
+    this.panSpeed = new tjs.Vector2(0.01, 0.01)
+    this.panStartPos = new tjs.Vector3()
+    this.panUnitX = new tjs.Vector3()
+    this.panUnitY = new tjs.Vector3()
+    this.panStartMousePos = new tjs.Vector2()
 
     // input state
     this.hasMouseFocus = false
@@ -45,7 +49,7 @@ class RenderState {
     window.addEventListener('mousedown', (e) => {
       if (!this.hasMouseFocus) return
 
-      if (this.keyStates["Alt"]) {
+      if (this.isOrbitMode) {
         this.isOrbiting = true
 
         const offT = e.target.getBoundingClientRect()
@@ -56,26 +60,30 @@ class RenderState {
 
         // insert sentinel action to be updated by mousemove
         this.updateCamAngle.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
-      }
-
-      if (this.keyStates["Shift"]) {
-        this.isOrbiting = true
+      } else if (this.isPanMode) {
+        this.isPanning = true
+        console.log("this.isPanning")
 
         const offT = e.target.getBoundingClientRect()
-        const offX = e.clientX - offT.left
-        const offY = e.clientY - offT.top
-        this.orbitStartMousePos.set(e.screenX, e.screenY)
-        this.orbitStartCamAngle.copy(this.cameraAngle)
+        this.panStartMousePos.set(e.screenX, e.screenY)
+        this.panStartPos.copy(this.focusPoint)
 
-        // insert sentinel action to be updated by mousemove
-        this.updateCamAngle.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
+        const forward = new tjs.Vector3().copy(this.focusPoint).sub(this.camera.position)
+        this.panUnitX.crossVectors(forward, new tjs.Vector3(0, 1, 0)).normalize()
+        this.panUnitY.crossVectors(this.panUnitX, forward).normalize()
       }
+
 
     })
 
     window.addEventListener('mouseup', (e) => {
+      if (!this.hasMouseFocus) return
+
       if (this.isOrbiting) {
         this.isOrbiting = false
+      }
+      if (this.isPanning) {
+        this.isPanning = false
       }
     })
 
@@ -95,6 +103,17 @@ class RenderState {
           clampCircular(this.cameraAngle.x, 0, TAU),
           tjs.MathUtils.clamp(this.cameraAngle.y, -TAU4, TAU4)
         )
+      } else if (this.isPanning) {
+
+        const mouseDelta = new tjs.Vector2(e.screenX, e.screenY).sub(this.panStartMousePos)
+        mouseDelta.multiply(this.panSpeed)
+        const deltaX = new tjs.Vector3().copy(this.panUnitX).multiplyScalar(mouseDelta.x)
+        const deltaY = new tjs.Vector3().copy(this.panUnitY).multiplyScalar(mouseDelta.y)
+        this.focusPoint.copy(this.panStartPos).add(deltaX).add(deltaY)
+        // FIXME: update camera angle too 
+        this.updateCamera()
+        this.invalidate()
+
       }
     })
 
@@ -110,18 +129,9 @@ class RenderState {
       }
     })
 
-    // TODO: events: resize, wheel, touch...
-
     // scene setup
     this.scene = new tjs.Scene()
     this.scene.background = new tjs.Color(0x101010);
-
-    // geometryCustom.setIndex(indices);
-    // geometryCustom.setAttribute('position', new tjs.BufferAttribute(vertices, 3));
-
-    // const materialCustom = new tjs.MeshBasicMaterial({ color: 0xCC5511 });
-    // const mesh = new tjs.Mesh(geometryCustom, materialCustom);
-    // this.scene.add(mesh)
 
     const axesHelper = new tjs.AxesHelper(5)
     this.scene.add(axesHelper)
@@ -133,30 +143,66 @@ class RenderState {
     light1.position.set(5, 5, 5)
     this.scene.add(light1)
 
-    const directionalLight = new tjs.DirectionalLight(0xffffff, 0.5);
+    const directionalLight = new tjs.DirectionalLight(0xffffff, 100);
     this.scene.add(directionalLight);
 
     // objects
-    const geometry = new tjs.BoxGeometry(1, 1, 1)
+    // const geometry = new tjs.BoxGeometry(1, 1, 1)
+    const geometry = new tjs.SphereGeometry(1, 10, 10)
     const material = new tjs.MeshLambertMaterial({ color: 0x11AA11 })
-    this.theCube = new tjs.Mesh(geometry, material)
-    this.scene.add(this.theCube)
+    this.theMesh = new tjs.Mesh(geometry, material)
+    this.scene.add(this.theMesh)
 
-
-    makeObservable(this, {
-      render: true,
-      updateCamAngle: true
-    })
-
-    this.history = hsTrack(this, {
-      updateCamAngle: ACTION
-    })
-
-    root.registerModule(this, {
+    root.registerModule(root, this, {
       actions: {
-        focusObject: {}
+        render: {
+          symbolName: null
+        },
+        randomCameraAngle: {},
+        updateCamAngle: {
+          history: {}
+        },
+        prevCamAngle: {
+          name: "Prev Cam",
+          symbolName: null
+        },
+        nextCamAngle: {
+          name: "Next Cam",
+          symbolName: null
+        },
+        focusObject: {
+          name: "Focus Last Object",
+          symbolName: null
+        },
+        zoomIn: {},
+        zoomOut: {}
+      },
+      properties: {
+        isOrbitMode: {
+          name: "Orbit",
+          symbolName: "orbit",
+          onToggle: action(() => { //TODO: create a mutex group
+            if (!this.isOrbitMode) {
+              this.properties.isPanMode.value = false
+            }
+            this.properties.isOrbitMode.value = !this.isOrbitMode
+          })
+        },
+        isPanMode: {
+          name: "Pan",
+          symbolName: "pan",
+          onToggle: action(() => {
+            if (!this.isPanMode) {
+              this.properties.isOrbitMode.value = false
+            }
+            this.properties.isPanMode.value = !this.isPanMode
+          })
+        }
       }
     })
+
+    // TODO: add a mutex group to handle this
+    // autorun(() => { if (this.properties.isOrbitMode) this.properties.isPanMode = false })
 
     // initialize history with dummy call of current value
     this.updateCamAngle.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
@@ -188,7 +234,24 @@ class RenderState {
     this.invalidate()
   }
 
+  zoomIn() {
+    this.focusDistance *= 0.9
+    this.updateCamera()
+    this.invalidate()
+  }
+
+  zoomOut() {
+    this.focusDistance *= 1.11112 // this * 0.9 ~ 1
+    this.updateCamera()
+    this.invalidate()
+  }
+
+  randomCameraAngle() {
+    this.updateCamAngle(Math.random() * TAU, Math.random() * TAU2 - TAU4)
+  }
+
   focusObject() {
+
     // find bounding box and a safe radius
     const bbox = new tjs.Box3().setFromObject(this.scene.children.at(-1))
     bbox.getCenter(this.focusPoint)
@@ -198,6 +261,7 @@ class RenderState {
     this.focusDistance = bsphere.radius;
 
     this.updateCamera()
+    this.invalidate()
   }
 
   get domElement() {
@@ -219,7 +283,7 @@ class RenderState {
   render() {
     this.renderer.render(this.scene, this.camera)
 
-    this.root.count++
+    this.root.properties.count.value = this.root.count + 1
     this.renderIsQueued = false
   }
 

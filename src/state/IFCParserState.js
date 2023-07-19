@@ -82,19 +82,19 @@ class IFCParserState {
         console.log("POLY", polyloopGroups[1], "POINT:", pointIndexGroups[1], "vertexIndex", vertexIndex, this.points[vertexIndex], this.points[vertexIndex + 1], this.points[vertexIndex + 2])
       }
       this.faces.push(...triangulatePotato(this.points, polyloopIndexes))
-      // if(this.faces.length == 12) break
     }
 
     console.log("loaded", this.faces.length, "indexes")
 
-    const geometryCustom = new tjs.BufferGeometry();
+    const geometryCustom = new tjs.BufferGeometry()
     console.log(this.faces)
     geometryCustom.setIndex(this.faces)
-    geometryCustom.setAttribute('position', new tjs.BufferAttribute(this.points, 3));
+    geometryCustom.setAttribute('position', new tjs.BufferAttribute(this.points, 3))
 
-    const materialCustom = new tjs.MeshBasicMaterial({ color: 0xCC5511, side: tjs.DoubleSide });
-    const mesh = new tjs.Mesh(geometryCustom, materialCustom);
+    const materialCustom = new tjs.MeshLambertMaterial({ color: 0xCC5511, side: tjs.DoubleSide })
+    const mesh = new tjs.Mesh(geometryCustom, materialCustom)
     this.root.render.scene.add(mesh)
+    this.root.render.focusObject()
 
     //#31465 wall with window holes
   }

@@ -30,6 +30,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  font-size: 1em;
 }
 
 h1 {
@@ -37,8 +38,36 @@ h1 {
   line-height: 1.1;
 }
 
+.panel {
+  display: inline-flex;
+  border: 0.1em solid #595252;
+  border-radius: 0.1em;
+  padding: 0.2em;
+}
+.panel.row {
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.panel.col {
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+
+.spacer{
+  padding: 0.2em;
+}
+
+.elem {
+  margin: 0.2em;
+  min-width: 3em;
+  min-height: 3em;
+}
+
 .dyntext input {
-  border: solid #5B6DCD 10px;
+  border: 10px solid #5B6DCD;
   padding: 5px;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
@@ -53,14 +82,19 @@ h1 {
 }
 
 button {
-  box-sizing: content-box;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+  display: inline-flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  align-items: center;
+
+  fill: white;
+  height: 3em;
+  padding: 0em 1em;
+
+  border: 1px solid #595252;
+  border-radius: 0.5em;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #444040;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -71,11 +105,20 @@ button:hover {
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: #53a8f2 solid 2px;
 }
 
-.symbol {
+button svg {
+  max-width: 1.5em;
+  max-height: 1.5em;
   fill: #cccccc;
+}
+
+.flag-inactive {
+  background-color: #2f2117;
+}
+.flag-active {
+  background-color: #af591b;
 }
 
 @media (prefers-color-scheme: light) {
