@@ -1,4 +1,4 @@
-import { makeObservable, autorun, observable } from "mobx"
+import { makeObservable, autorun, observable, action } from "mobx"
 import RenderState from "./RenderState"
 import IFCParserState from "./IFCParserState"
 import OBJParserState from "./OBJParserState"
@@ -23,7 +23,7 @@ class RootState {
 
   registerModule(target, specs) {
     fn.codeDoc(() => {
-      root.registerModule(this, {
+      root.registerModule(parent, this, {
         name: "nameInUI", // default: the class name in camelCase -- myObj.constructor.name
 
         /*
@@ -35,20 +35,26 @@ class RootState {
         */
         actions: {
           actionName: {
-            name: "Name in UI",
-            // Used to update state without tracking history, small, fast, preview updates
+            name: "Name in UI", // default: deCamelize(actionName)
+            /* use the symbol under asserts/symbols/actionName.svg */
+            symbolName: "someOtherName", // default: actionName; null to ommit
+            /* Used to update state without tracking history, small, fast, preview updates */
             onPreview: (...params) => this.someInternalAction.trackWith({ isOverwrite: true })(...params),
-            // The final update e.g. onMouseUp, onFocusOut. Has the same params as the last onPreview
+            /* The final update e.g. onMouseUp, onFocusOut. Has the same params as the last onPreview */
             onDone: (...params) => this.someInternalAction(...params),
-            // Will generate children values which will be passed as params
+            /* Will generate children values which will be passed as params */
             params: {
-              onInit: () => [0, { value: 1337 }, 2, 3], // constructor for params
+              /* params = onInit() */
+              onInit: () => [0, { value: 1337 }, 2, 3],
               paramName: {
-                argPos: 2,                // params[argPos]          = paramName, default: null(don't pass)
-                argPath: ['a', 'b', 'c'], // params[argPos][a][b][c] = paramName, default: null(just argPos)
-                validator: (value) => value > 5, // show invaid UI if false, don't call onPreview/onDone/preprocess
-                invalidMessage: (value) => `${value} should be larger than 5`, // UI message
-                preprocess: (value) => Math.abs(value) // map the parameter before onPreview/onDone
+                /* set params passed to onPreview/onDone */
+                argSetter: (params, value) => params[2].a.b.c = value, // default: (...) => params[paramNameIndex] = value
+                /* show invaid UI if false, don't call onPreview/onDone/preprocess*/
+                validator: (value) => value > 5, // default: (value) => true
+                /* UI message */
+                invalidMessage: (value) => `${value} should be larger than 5`, // defaut: (value) => "Invalid"
+                /* map the parameter before onPreview/onDone */
+                preprocess: (value) => Math.abs(value) // default: (value) => value
               }
             }
           }
@@ -62,7 +68,9 @@ class RootState {
         */
         properties: {
           propName: {
-            onInit: () => 1337, // constructor for params
+            name: "Name in UI", // default: deCamelize(propName)
+            /* use the symbol under asserts/symbols/propName.svg */
+            symbolName: "someOtherName", // default: propName; null to ommit
           }
         }
       })
@@ -78,19 +86,31 @@ class RootState {
         ...name.match(/[A-Z][a-z]+/g)
       ].join(" ")
     }
-    mobxArgs = {}
+    const mobxArgs = {}
 
-    for (const actName in specs.actions) {
-      // provide defaults
-      this.actions[actName] = {
+    const actions = specs.actions
+    for (const actName in actions) {
+      const act = actions[actName]
+      
+      fn.defaultsFor(act, {
         tick: () => target[actName].call(target),
         name: deCamelize(actName),
-        symbolId: `#symbol_${actName}`
-      }
-      // overwrite if field is set
-      for (const field in specs.actions[actName]) {
-        this.actions[actName][field] = actions[actName][field]
-      }
+        symbolName: actName,
+        symbolId: `#symbol_${act.symbolName}`
+      })
+
+      mobxArgs[actName] = action
+    }   
+    
+    const properties = specs.properties
+    for (const propName in properties) {
+      const prop = properties[propName]
+      
+      fn.defaultsFor(prop, {
+        name: deCamelize(actName),
+        symbolName: actName,
+        symbolId: `#symbol_${act.symbolName}`
+      })
 
       mobxArgs[actName] = action
     }
