@@ -2,44 +2,59 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { observer } from "mobx-react"
 import { useRef, useEffect } from 'react'
+import DynPanel from "@/components/DynPanel"
+import DynButton from "@/components/DynButton"
+import DynSlider from "@/components/DynSlider"
+import DynFlag from "@/components/DynFlag"
+import DynText from "@/components/DynText"
+import { svgs } from 'svgSymbols'
+import rootState from "./state/rootState"
 
 import './App.css'
 
-
-
-const App = observer(({ state }) => {
+const App = observer(({ }) => {
 
   const canvasContainerRef = useRef(null)
 
   useEffect(() => {
     const container = canvasContainerRef.current
-    container.appendChild(state.render.domElement)
+    container.appendChild(rootState.render.domElement)
   }, [])
 
   return (
     <>
-      <div ref={canvasContainerRef} />
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => state.render.invalidate()}>
-          render count is {state.count}
-        </button>
-        <button onClick={() => { state.render.updateCamAngle(2, 0.5) }}>
-          cam change
-        </button>
-        <button onClick={() => { state.render.prevCamAngle() }}>
-          cam prev
-        </button>
-        <button onClick={() => { state.render.nextCamAngle() }}>
-          cam next
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      {/* make svgs under assets/symbols available via use href="#symbol_nameHere" */}
+      <div style={{ display: "none" }}>
+        {Object.keys(svgs).map((k) => (
+          <div key={k} dangerouslySetInnerHTML={svgs[k]} />
+        ))}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <DynPanel flow="col">
+        <DynPanel>
+          <DynButton action={rootState.render.actions.randomCameraAngle} />
+          <DynButton action={rootState.render.actions.prevCamAngle} />
+          <DynButton action={rootState.render.actions.nextCamAngle} />
+          <DynButton action={rootState.render.actions.focusObject} />
+          <DynButton action={rootState.render.actions.zoomIn} />
+          <DynButton action={rootState.render.actions.zoomOut} />
+        </DynPanel>
+        <DynPanel>
+          <DynFlag property={rootState.render.properties.isOrbitMode} />
+          <DynFlag property={rootState.render.properties.isPanMode} />
+        </DynPanel>
+      </DynPanel>
+      <DynPanel flow="col">
+        <div ref={canvasContainerRef} />
+        <h1 style={{ "align-self": "center" }}>Vite + React</h1>
+        <div className="card" style={{ 'maxWidth': '640px' }}>
+          <button onClick={() => rootState.render.invalidate()}>
+            render count is {rootState.properties.count.value}
+          </button>
+          <DynButton action={rootState.actions.loadInstituteSample} />
+          <DynButton action={rootState.actions.loadHausSample} />
+          <DynButton action={rootState.actions.loadChurchSample} />
+        </div>
+      </DynPanel>
     </>
   )
 })

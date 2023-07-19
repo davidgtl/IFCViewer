@@ -1,5 +1,5 @@
 
-import fn from "@/fn.js";
+import fn from "@/fn";
 
 
 const ACTION = { tag: "action" }
@@ -103,21 +103,21 @@ function hsTrack(target, props) {
 
       /*
         (options, default):     
-          isTrack:            true   \    -- record the arguments
-          isOverwrite:        false  /    -- replace arguments at pointer
-          isCall:             true        -- call the action
+          isTracked:          true        -- record the arguments
+          isOverwrite:        false       -- record call by overwriting the one at current pointer
+          isDummyCall:        false       -- don't call the action
           isArgsFromPrev:     false       -- use previous arguments instead, if possible
       */
       wrapper.trackWith = (options) => {
 
         const tracking = fn.condShort(
-          [options.isTrack === false, (args) => { }],
+          [options.isTracked === false, (args) => { }],
           [options.isOverwrite, (args) => history[key].recordInPlace(args)],
           [true, (args) => history[key].record(args)]
         )
 
         const calling = fn.condShort(
-          [options.isCall === false, (args) => { }],
+          [options.isDummyCall, (args) => { }],
           [true, (args) => func.apply(target, args)]
         )
 
@@ -132,8 +132,9 @@ function hsTrack(target, props) {
           return calling(currentArgs)
         }
       }
-
+      
       target[key] = wrapper
+      target.history = history
 
     } else {
       throw new Error('Not Implemented')

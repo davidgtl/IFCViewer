@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import RootState from './state/RootState'
 import './index.css'
 import { configure as mobxconfig } from "mobx"
 
@@ -14,11 +13,8 @@ mobxconfig({
   // disableErrorBoundaries: true // first reaction error escapes through the action call
 })
 
-
-const state = new RootState()
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App state={state} />
+    <App/>
   </React.StrictMode>,
 )
