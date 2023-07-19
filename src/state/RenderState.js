@@ -143,7 +143,7 @@ class RenderState {
     light1.position.set(5, 5, 5)
     this.scene.add(light1)
 
-    const directionalLight = new tjs.DirectionalLight(0xffffff, 100);
+    const directionalLight = new tjs.DirectionalLight(0xffffff, 0.5);
     this.scene.add(directionalLight);
 
     // objects
