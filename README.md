@@ -17,6 +17,6 @@ Built with [Vite](https://vitejs.dev/), [React](https://react.dev/), [MobX](http
  * A simple, greedy triangulation algorithm in [src/algo/triangulatePotato.js](src/algo/triangulatePotato.js)
  * An SVG embedder build step in [src/plugins/svgSymbols.js](src/plugins/svgSymbols.js)
  * A history tracker(undo/redo) in [src/state/history.js](src/state/history.js)
- * A broken IFC mini Parser in [src/state/IFParserState.js](src/state/IFParserState.js)
+ * A broken IFC mini Parser in [src/state/IFCParserState.js](src/state/IFCParserState.js)
 
 [Credits](CREDITS.md)
