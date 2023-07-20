@@ -77,14 +77,8 @@ class RenderState {
     })
 
     window.addEventListener('mouseup', (e) => {
-      if (!this.hasMouseFocus) return
-
-      if (this.isOrbiting) {
-        this.isOrbiting = false
-      }
-      if (this.isPanning) {
-        this.isPanning = false
-      }
+      this.isOrbiting = false
+      this.isPanning = false
     })
 
     window.addEventListener('mousemove', (e) => {
