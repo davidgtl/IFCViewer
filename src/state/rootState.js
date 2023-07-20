@@ -16,6 +16,9 @@ class RootState {
 
     this.registerModule(this, this, {
       actions: {
+        loadLucySample: {
+          symbolName: null,
+        },
         loadInstituteSample: {
           symbolName: null,
         },
@@ -193,6 +196,9 @@ class RootState {
     hsTrack(target, hsTrackArgs)
   }
 
+  loadLucySample() {
+    this.objParser.loadFromURL("./samples/lucy.obj")
+  }
   loadInstituteSample() {
     this.ifcParser.loadFromURL("./samples/AC20-Institute-Var-2.ifc")
   }

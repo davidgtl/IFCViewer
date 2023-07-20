@@ -174,6 +174,9 @@ class RenderState {
           name: "Focus Last Object",
           symbolName: null
         },
+        normalizeObject: {
+          symbolName: null
+        },
         zoomIn: {},
         zoomOut: {}
       },
@@ -261,6 +264,21 @@ class RenderState {
     this.focusDistance = bsphere.radius;
 
     this.updateCamera()
+    this.invalidate()
+  }
+
+  normalizeObject() {
+
+    console.log(this.scene.children)
+    // find bounding box and a safe radius
+    const bbox = new tjs.Box3().setFromObject(this.scene.children.at(-1))
+    const size = new tjs.Vector3()
+    bbox.getSize(size)
+    const sizeMax = Math.max(size.x, size.y, size.z)
+    this.scene.children.at(-1).scale.set(10 / sizeMax, 10 / sizeMax, 10 / sizeMax)
+
+   console.log("scale", this.scene.children.at(-1).scale)
+
     this.invalidate()
   }
 

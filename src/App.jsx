@@ -35,6 +35,7 @@ const App = observer(({ }) => {
           <DynButton action={rootState.render.actions.prevCamAngle} />
           <DynButton action={rootState.render.actions.nextCamAngle} />
           <DynButton action={rootState.render.actions.focusObject} />
+          <DynButton action={rootState.render.actions.normalizeObject} />
           <DynButton action={rootState.render.actions.zoomIn} />
           <DynButton action={rootState.render.actions.zoomOut} />
         </DynPanel>
@@ -50,6 +51,7 @@ const App = observer(({ }) => {
           <button onClick={() => rootState.render.invalidate()}>
             render count is {rootState.properties.count.value}
           </button>
+          <DynButton action={rootState.actions.loadLucySample} />
           <DynButton action={rootState.actions.loadInstituteSample} />
           <DynButton action={rootState.actions.loadHausSample} />
           <DynButton action={rootState.actions.loadChurchSample} />
