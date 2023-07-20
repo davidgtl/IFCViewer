@@ -1,3 +1,4 @@
+- list container + curried actions
 - touchEvents, try on mobile
 - UI: background, button, coarse-fine slider, state symbol
 - scalable movable panels? breadcrumbs for each state field/action?

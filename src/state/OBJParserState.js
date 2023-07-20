@@ -67,12 +67,12 @@ class OBJParserState {
 
     this.faces = []
 
-    const center = new tjs.Vector3()  
-    const tmp = new tjs.Vector3()  
+    const center = new tjs.Vector3()
+    const tmp = new tjs.Vector3()
     for (const faceGroups of this.fileContent.matchAll(/^f (.*?) (.*?) (.*?)$/gm)) {
-      const components = faceGroups.slice(1, 4).map(x=>parseInt(x))
+      let components = faceGroups.slice(1, 4).map(x => parseInt(x))
       center.add(tmp.set(components))
-
+      components = components.map(x => x - 1) // objs indexes start from 1
       this.faces.push(...components)
     }
 
@@ -80,14 +80,17 @@ class OBJParserState {
 
     console.log("loaded", this.faces.length, "indexes")
 
-    const geometryCustom = new tjs.BufferGeometry();
+    const geometryCustom = new tjs.BufferGeometry()
+    console.log(this.points)
     console.log(this.faces)
     geometryCustom.setIndex(this.faces)
-    geometryCustom.setAttribute('position', new tjs.BufferAttribute(this.points, 3));
+    geometryCustom.setAttribute('position', new tjs.BufferAttribute(this.points, 3))
+    geometryCustom.computeVertexNormals()
 
-    const materialCustom = new tjs.MeshLambertMaterial({ color: 0xCC5511, side: tjs.DoubleSide });
+    const materialCustom = new tjs.MeshLambertMaterial({ color: 0xCC5511 })//side: tjs.DoubleSide
     const mesh = new tjs.Mesh(geometryCustom, materialCustom);
     this.root.render.scene.add(mesh)
+
     this.root.render.focusObject()
 
 

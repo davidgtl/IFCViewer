@@ -90,10 +90,12 @@ class IFCParserState {
     console.log(this.faces)
     geometryCustom.setIndex(this.faces)
     geometryCustom.setAttribute('position', new tjs.BufferAttribute(this.points, 3))
+    geometryCustom.computeVertexNormals()
 
     const materialCustom = new tjs.MeshLambertMaterial({ color: 0xCC5511, side: tjs.DoubleSide })
     const mesh = new tjs.Mesh(geometryCustom, materialCustom)
     this.root.render.scene.add(mesh)
+
     this.root.render.focusObject()
 
     //#31465 wall with window holes

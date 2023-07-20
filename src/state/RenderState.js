@@ -69,22 +69,16 @@ class RenderState {
         this.panStartPos.copy(this.focusPoint)
 
         const forward = new tjs.Vector3().copy(this.focusPoint).sub(this.camera.position)
-        this.panUnitX.crossVectors(forward, new tjs.Vector3(0, 1, 0)).normalize()
-        this.panUnitY.crossVectors(this.panUnitX, forward).normalize()
+        this.panUnitX.crossVectors(new tjs.Vector3(0, 1, 0), forward).normalize()
+        this.panUnitY.crossVectors(forward, this.panUnitX).normalize()
       }
 
 
     })
 
     window.addEventListener('mouseup', (e) => {
-      if (!this.hasMouseFocus) return
-
-      if (this.isOrbiting) {
-        this.isOrbiting = false
-      }
-      if (this.isPanning) {
-        this.isPanning = false
-      }
+      this.isOrbiting = false
+      this.isPanning = false
     })
 
     window.addEventListener('mousemove', (e) => {
@@ -110,7 +104,7 @@ class RenderState {
         const deltaX = new tjs.Vector3().copy(this.panUnitX).multiplyScalar(mouseDelta.x)
         const deltaY = new tjs.Vector3().copy(this.panUnitY).multiplyScalar(mouseDelta.y)
         this.focusPoint.copy(this.panStartPos).add(deltaX).add(deltaY)
-        // FIXME: update camera angle too 
+
         this.updateCamera()
         this.invalidate()
 
@@ -143,7 +137,7 @@ class RenderState {
     light1.position.set(5, 5, 5)
     this.scene.add(light1)
 
-    const directionalLight = new tjs.DirectionalLight(0xffffff, 100);
+    const directionalLight = new tjs.DirectionalLight(0xffffff, 0.5);
     this.scene.add(directionalLight);
 
     // objects
@@ -172,6 +166,9 @@ class RenderState {
         },
         focusObject: {
           name: "Focus Last Object",
+          symbolName: null
+        },
+        normalizeObject: {
           symbolName: null
         },
         zoomIn: {},
@@ -214,9 +211,9 @@ class RenderState {
     // (focus point, focus distance) -> (camera position, camera rotation)
     const [xc, xs] = [Math.cos(this.cameraAngle.x), Math.sin(this.cameraAngle.x)]
     const [yc, ys] = [Math.cos(this.cameraAngle.y), Math.sin(this.cameraAngle.y)]
+    const offset = new tjs.Vector3(xc * yc, ys, xs * yc).multiplyScalar(this.focusDistance)
 
-    this.camera.position.set(xc * yc, ys, xs * yc)
-    this.camera.position.multiplyScalar(this.focusDistance)
+    this.camera.position.copy(this.focusPoint).add(offset)
     this.camera.lookAt(this.focusPoint)
   }
 
@@ -261,6 +258,21 @@ class RenderState {
     this.focusDistance = bsphere.radius;
 
     this.updateCamera()
+    this.invalidate()
+  }
+
+  normalizeObject() {
+
+    console.log(this.scene.children)
+    // find bounding box and a safe radius
+    const bbox = new tjs.Box3().setFromObject(this.scene.children.at(-1))
+    const size = new tjs.Vector3()
+    bbox.getSize(size)
+    const sizeMax = Math.max(size.x, size.y, size.z)
+    this.scene.children.at(-1).scale.set(10 / sizeMax, 10 / sizeMax, 10 / sizeMax)
+
+   console.log("scale", this.scene.children.at(-1).scale)
+
     this.invalidate()
   }
 
