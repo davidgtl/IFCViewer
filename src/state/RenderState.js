@@ -217,9 +217,9 @@ class RenderState {
     // (focus point, focus distance) -> (camera position, camera rotation)
     const [xc, xs] = [Math.cos(this.cameraAngle.x), Math.sin(this.cameraAngle.x)]
     const [yc, ys] = [Math.cos(this.cameraAngle.y), Math.sin(this.cameraAngle.y)]
+    const offset = new tjs.Vector3(xc * yc, ys, xs * yc).multiplyScalar(this.focusDistance)
 
-    this.camera.position.set(xc * yc, ys, xs * yc)
-    this.camera.position.multiplyScalar(this.focusDistance)
+    this.camera.position.copy(this.focusPoint).add(offset)
     this.camera.lookAt(this.focusPoint)
   }
 
