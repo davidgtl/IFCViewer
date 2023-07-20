@@ -69,8 +69,8 @@ class RenderState {
         this.panStartPos.copy(this.focusPoint)
 
         const forward = new tjs.Vector3().copy(this.focusPoint).sub(this.camera.position)
-        this.panUnitX.crossVectors(forward, new tjs.Vector3(0, 1, 0)).normalize()
-        this.panUnitY.crossVectors(this.panUnitX, forward).normalize()
+        this.panUnitX.crossVectors(new tjs.Vector3(0, 1, 0), forward).normalize()
+        this.panUnitY.crossVectors(forward, this.panUnitX).normalize()
       }
 
 
@@ -110,7 +110,7 @@ class RenderState {
         const deltaX = new tjs.Vector3().copy(this.panUnitX).multiplyScalar(mouseDelta.x)
         const deltaY = new tjs.Vector3().copy(this.panUnitY).multiplyScalar(mouseDelta.y)
         this.focusPoint.copy(this.panStartPos).add(deltaX).add(deltaY)
-        // FIXME: update camera angle too 
+
         this.updateCamera()
         this.invalidate()
 
