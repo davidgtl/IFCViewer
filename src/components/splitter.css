@@ -1,0 +1,17 @@
+.splitter.row {
+  height: 0.3rem;
+  background: var(--elem-border-color);
+  width: 100%;
+  position: relative;
+  cursor: ns-resize;
+}
+
+.splitter.row svg {
+  position: absolute;
+  height: 0.2rem;
+  top: 0.05rem;
+  fill: var(--elem-highlight-inactive-color);
+}
+.splitter.row:focus svg {
+  fill: var(--elem-highlight-active-color);
+}
