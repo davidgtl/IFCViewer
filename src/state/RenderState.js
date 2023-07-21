@@ -31,7 +31,7 @@ class RenderState {
     // panning -- click and drag to translate
     this.isPanMode = false
     this.isPanning = false
-    this.panSpeed = new tjs.Vector2(0.01, 0.01)
+    this.panSpeed = new tjs.Vector2(0.05, 0.05)
     this.panStartPos = new tjs.Vector3()
     this.panUnitX = new tjs.Vector3()
     this.panUnitY = new tjs.Vector3()
@@ -67,6 +67,7 @@ class RenderState {
         const offT = e.target.getBoundingClientRect()
         this.panStartMousePos.set(e.screenX, e.screenY)
         this.panStartPos.copy(this.focusPoint)
+        this.panSpeed.set(0.003*this.focusDistance, 0.003*this.focusDistance)
 
         const forward = new tjs.Vector3().copy(this.focusPoint).sub(this.camera.position)
         this.panUnitX.crossVectors(new tjs.Vector3(0, 1, 0), forward).normalize()

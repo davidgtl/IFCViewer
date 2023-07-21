@@ -1,0 +1,38 @@
+
+button {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+
+  font-size: 1rem;
+
+  background-color: var(--elem-bg-color);
+  fill: white;
+  height: 3rem;
+  padding: 0rem 1rem;
+
+  border: 1px solid var(--elem-border-color);
+  border-radius: 0.5rem;
+
+  transition: border-color 0.25s;
+}
+
+button span {
+  white-space: nowrap;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: #53a8f2 solid 2px;
+}
+
+button svg {
+  height: 1.5rem;
+  width: 1.5rem;
+  fill: #cccccc;
+}

@@ -1,16 +1,17 @@
 import { action } from "mobx"
 import { observer } from "mobx-react"
 import { useState, useEffect } from 'react'
+import "./dynslider.css"
 
-const TextField = ({ property }) => {
+const DynSlider = ({ property }) => {
   return (
-    <div className="dynslider">
-      <input data-index="0" aria-label="Small" aria-valuenow="70" aria-orientation="horizontal" aria-valuemax="100" aria-valuemin="0" type="range" min="0" max="100" step="1" value={property.value}
-        onChange={action(e => property.value = e.target.value)} />
+    <div className="dynslider" role="slider" tabIndex="0" aria-valuemin={property.valueMin} aria-valuenow={property.value} aria-valuemax={property.valueMax} aria-labelledby="slider">
+      <div className="dynslider_handle"/>
+      <div className="dynslider_meter"/>
     </div>
   )
 }
 
-export default TextField
+export default DynSlider
 
 

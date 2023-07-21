@@ -1,5 +1,6 @@
 import { observer } from "mobx-react"
 import { useRef, useEffect } from 'react'
+import "./dynbutton.css"
 
 /**
   Dynamic Button

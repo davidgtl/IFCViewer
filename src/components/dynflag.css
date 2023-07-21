@@ -1,0 +1,22 @@
+.panel.mutex.row>.flag:first-child {
+  border: 1px solid var(--elem-border-color);
+  border-right: none;
+  border-radius: 0.5rem 0rem 0rem 0.5rem;
+}
+
+.panel.mutex.row>.flag:last-child {
+  border: 1px solid var(--elem-border-color);
+  border-left: none;
+  border-radius: 0rem 0.5rem 0.5rem 0rem;
+}
+
+.flag-inactive {
+  /* background-color: var(--elem-bg-inactive-color); */
+  box-shadow: inset 0px -0.2rem 0px 0rem var(--elem-highlight-inactive-color);
+}
+
+.flag-active{
+  background-color: var(--elem-bg-color);
+  box-shadow: inset 0px -0.2rem 0px 0rem var(--elem-highlight-active-color);
+}
+
