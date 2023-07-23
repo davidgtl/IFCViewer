@@ -7,7 +7,7 @@ import "./splitter.css"
   
   adjusts the percentange of the prev/next panels
 */
-const Splitter = ({ containerLength, getPrev, getNext, updatePrev, updateNext, flow = "row" }) => {
+const Splitter = ({ remUnit, containerLength, getPrev, getNext, updatePrev, updateNext, flow = "row" }) => {
 
   const startPos = useRef({ x: 0, y: 0 })
   const startValues = useRef([0, 0])
@@ -15,9 +15,10 @@ const Splitter = ({ containerLength, getPrev, getNext, updatePrev, updateNext, f
 
   const onMouseMove = (e) => {
     const delta = flow == "row" ? e.screenX - startPos.x : e.screenY - startPos.y
-    const deltaRelative = 100 * delta / containerLength
-    updatePrev(startValues[0] + deltaRelative)
-    updateNext(startValues[1] - deltaRelative)
+    // const deltaRelative = delta / remUnit
+    updatePrev(startValues[0] + Math.floor(delta / remUnit))
+    updateNext(startValues[1] - Math.floor(delta / remUnit))
+    console.log("remUnit", remUnit, "delta", delta)
   }
   const onMouseUp = (e) => {
     removeEventListener("mousemove", onMouseMove)

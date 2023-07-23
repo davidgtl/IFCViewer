@@ -7,7 +7,7 @@ button {
   font-size: 1rem;
 
   background-color: var(--elem-bg-color);
-  fill: white;
+  fill: var(--text-inactive-color);
   height: 3rem;
   width: max-content;
   padding: 0rem 1rem;
@@ -34,5 +34,4 @@ button:focus-visible {
 button svg {
   height: 1.5rem;
   width: 1.5rem;
-  fill: #cccccc;
 }

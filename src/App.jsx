@@ -10,6 +10,7 @@ import PerceptualColorSpace from "@/components/PerceptualColorSpace"
 import DynText from "@/components/DynText"
 import { svgs } from 'svgSymbols'
 import rootState from "./state/rootState"
+import fn from '@/fn'
 
 import './App.css'
 
@@ -25,35 +26,47 @@ const App = observer(({ }) => {
 
   return (
     <>
-      <div className='main theme-dark'> {/* config-ui */}
-        {/* make svgs under assets/symbols available via use href="#symbol_nameHere" */}
+      <div className={'main' + (rootState.ui.props.isConfigUI.value ? ' config-ui' : '') + fn.condShort(
+        [rootState.ui.props.isThemeLight.value, " theme-light"],
+        [rootState.ui.props.isThemeDark.value, " theme-dark"],
+        [rootState.ui.props.isThemeSystem.value, " theme-system"],
+        [true, " theme-dark"]
+      )} >
         <div style={{ display: "none" }}>
           {Object.keys(svgs).map((k) => (
             <div key={k} dangerouslySetInnerHTML={svgs[k]} />
           ))}
         </div>
-        <DynPanel flow="col" style={{ height: "80rem", width: "60rem" }} >
-          <DynPanel flow="col" flexBasis={15} style={{ width: "60rem" }} >
-            <DynPanel flow="row" flexBasis={65}>
-              <DynButton action={rootState.render.actions.randomCameraAngle} />
-              <DynButton action={rootState.render.actions.prevCamAngle} />
-              <DynButton action={rootState.render.actions.nextCamAngle} />
-              <DynButton action={rootState.render.actions.focusObject} />
-              <DynButton action={rootState.render.actions.normalizeObject} />
-              <DynButton action={rootState.render.actions.zoomIn} />
-              <DynButton action={rootState.render.actions.zoomOut} />
+        <DynPanel flow="col" style={{ width: "60rem" }} >
+          <DynPanel flow="row" anchor="end">
+            <DynPanel flow="row" isMutex={true}>
+              <DynFlag property={rootState.ui.props.isThemeLight} />
+              <DynFlag property={rootState.ui.props.isThemeDark} />
+              <DynFlag property={rootState.ui.props.isThemeSystem} />
             </DynPanel>
-            <DynPanel flow="row" flexBasis={35} isMutex={true}>
-              <DynFlag property={rootState.render.properties.isOrbitMode} />
-              <DynFlag property={rootState.render.properties.isPanMode} />
+            <DynFlag property={rootState.ui.props.isConfigUI} />
+          </DynPanel>
+          <DynPanel flow="row">
+            <DynButton action={rootState.render.actions.randomCameraAngle} />
+            <DynButton action={rootState.render.actions.prevCamAngle} />
+            <DynButton action={rootState.render.actions.nextCamAngle} />
+            <DynButton action={rootState.render.actions.focusObject} />
+            <DynButton action={rootState.render.actions.normalizeObject} />
+          </DynPanel>
+          <DynPanel flow="row">
+            <DynPanel flow="row" isMutex={true}>
+              <DynFlag property={rootState.render.props.isOrbitMode} />
+              <DynFlag property={rootState.render.props.isPanMode} />
             </DynPanel>
+            <DynButton action={rootState.render.actions.zoomIn} />
+            <DynButton action={rootState.render.actions.zoomOut} />
           </DynPanel>
           <DynPanel flow="col" flexBasis={85} style={{ alignItems: "center" }}>
             <div ref={canvasContainerRef} />
             <h1 style={{ alignSelf: "center" }}>Vite + React</h1>
             <div className="card" style={{ 'maxWidth': '640px' }}>
               <button onClick={() => rootState.render.invalidate()}>
-                render count is {rootState.properties.count.value}
+                render count is {rootState.props.count.value}
               </button>
               <DynButton action={rootState.actions.loadLucySample} />
               <DynButton action={rootState.actions.loadInstituteSample} />

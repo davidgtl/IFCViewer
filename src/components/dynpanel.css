@@ -53,11 +53,15 @@
 .panel.mutex.row {
   row-gap: 0.2rem;
   column-gap: 0rem;
+  padding: 0;
+  overflow: visible;
 }
 
 .panel.mutex.col {
   column-gap: 0.2rem;
   row-gap: 0rem;
+  padding: 0;
+  overflow: visible;
 }
 
 .panel.mutex>*:focus {
@@ -73,4 +77,5 @@
   flex-shrink: 1;
   flex-grow: 0;
   border: none;
+  /* padding: 0; */
 }

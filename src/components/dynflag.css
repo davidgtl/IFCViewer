@@ -1,8 +1,16 @@
+.panel.mutex.row>.flag {
+  border: 1px solid var(--elem-border-color);
+  border-left: none;
+  border-right: none;
+  border-radius: 0 0 0 0;
+}
+
 .panel.mutex.row>.flag:first-child {
   border: 1px solid var(--elem-border-color);
   border-right: none;
   border-radius: 0.5rem 0rem 0rem 0.5rem;
 }
+
 
 .panel.mutex.row>.flag:last-child {
   border: 1px solid var(--elem-border-color);

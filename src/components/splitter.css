@@ -1,31 +1,55 @@
-.splitter.col {
-  height: 0.3rem;
+.splitter {
   background: var(--elem-border-color);
+  padding: 0.1rem;
+}
+
+.config-ui .splitter {
+  background: var(--elem-border-color);
+}
+
+.splitter.col {
+  height: max(1px, 0.05rem);
   width: 100%;
-  position: relative;
   cursor: ns-resize;
+  display: flex;
+  align-items: center;
+  flex-flow: row nowrap;
+  justify-content: center;
+}
+
+.config-ui .splitter.col {
+  height: 0.5rem;
 }
 
 .splitter.row {
-  width: 0.3rem;
-  background: var(--elem-border-color);
+  width: max(1px, 0.05rem);
   height: 100%;
-  position: relative;
   cursor: ew-resize;
+  display: flex;
+  align-items: center;
+  flex-flow: column nowrap;
+  justify-content: center;
+}
+
+.config-ui .splitter.row {
+  width: 0.3rem;
 }
 
 .splitter svg {
-  position: absolute;
+  display: none;
   fill: var(--elem-highlight-inactive-color);
 }
+
+.config-ui .splitter svg {
+  display: inline;
+}
+
 .splitter.col svg {
   height: 0.2rem;
-  top: 0.05rem;
 }
 
 .splitter.row svg {
   width: 0.2rem;
-  left: 0.05rem;
 }
 
 .splitter:focus svg {
