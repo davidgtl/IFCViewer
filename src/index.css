@@ -16,16 +16,24 @@ body {
   margin: 0;
   display: block;
   place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 #root {
-  min-height: inherit;
-  min-width: inherit;
+  min-height: 100vh;
+  min-width: 100vw;
   margin: 0 auto;
   padding: 0;
   text-align: center;
+}
+
+.main {
+  min-height: max-content;
+  min-width: max-content;
+  background: var(--bg-color);
+}
+
+.elem {
+  color: var(--text-inactive-color);
 }
 
 .theme-dark {
@@ -96,16 +104,6 @@ body {
     --elem-border-color: oklch(78% 0.015 var(--main-hue));
     --separator-color: oklch(88% 0.015 var(--main-hue));
   }
-}
-
-.main {
-  min-height: inherit;
-  min-width: inherit;
-  background: var(--bg-color);
-}
-
-.elem {
-  color: var(--text-inactive-color);
 }
 
 a {
