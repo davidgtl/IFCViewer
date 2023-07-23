@@ -1,6 +1,7 @@
 .splitter {
   background: var(--elem-border-color);
   padding: 0.1rem;
+  box-sizing: border-box;
 }
 
 .config-ui .splitter {

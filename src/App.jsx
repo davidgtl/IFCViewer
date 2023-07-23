@@ -75,6 +75,9 @@ const App = observer(({ }) => {
             </div>
             <PerceptualColorSpace />
           </DynPanel>
+          <DynPanel flow="row">
+            Lorem Ipsum
+          </DynPanel>
         </DynPanel>
       </div>
     </>
