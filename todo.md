@@ -1,11 +1,12 @@
-- snap resize to integer * 1rem
-- parse indexx.css oklch to hex with vite
-- UI light/dark themes, adjustable font-size
-- tabs
-- list container + curried actions
+- parse index.css oklch to hex with vite
 - touchEvents, try on mobile
-- UI: background, button, coarse-fine slider, state symbol
-- scalable movable panels? breadcrumbs for each state field/action?
-- event parse the IFC file into triangles
+- UI: coarse-fine slider
+----- below this UI requires state per component ------
+- tabs
+- adjustable font-size
 - keyboard navigation + vimmode? -- key bindings in actions
+- on configUI click on button to pick S, S|Text, Text
+- breadcrumbs for each state field/action?
+- event parse the IFC file into triangles
+- list container + curried actions
 
