@@ -31,7 +31,7 @@ class RenderState {
     // panning -- click and drag to translate
     this.isPanMode = false
     this.isPanning = false
-    this.panSpeed = new tjs.Vector2(0.01, 0.01)
+    this.panSpeed = new tjs.Vector2(0.05, 0.05)
     this.panStartPos = new tjs.Vector3()
     this.panUnitX = new tjs.Vector3()
     this.panUnitY = new tjs.Vector3()
@@ -67,6 +67,7 @@ class RenderState {
         const offT = e.target.getBoundingClientRect()
         this.panStartMousePos.set(e.screenX, e.screenY)
         this.panStartPos.copy(this.focusPoint)
+        this.panSpeed.set(0.003*this.focusDistance, 0.003*this.focusDistance)
 
         const forward = new tjs.Vector3().copy(this.focusPoint).sub(this.camera.position)
         this.panUnitX.crossVectors(new tjs.Vector3(0, 1, 0), forward).normalize()
@@ -174,15 +175,15 @@ class RenderState {
         zoomIn: {},
         zoomOut: {}
       },
-      properties: {
+      props: {
         isOrbitMode: {
           name: "Orbit",
           symbolName: "orbit",
           onToggle: action(() => { //TODO: create a mutex group
             if (!this.isOrbitMode) {
-              this.properties.isPanMode.value = false
+              this.props.isPanMode.value = false
             }
-            this.properties.isOrbitMode.value = !this.isOrbitMode
+            this.props.isOrbitMode.value = !this.isOrbitMode
           })
         },
         isPanMode: {
@@ -190,16 +191,16 @@ class RenderState {
           symbolName: "pan",
           onToggle: action(() => {
             if (!this.isPanMode) {
-              this.properties.isOrbitMode.value = false
+              this.props.isOrbitMode.value = false
             }
-            this.properties.isPanMode.value = !this.isPanMode
+            this.props.isPanMode.value = !this.isPanMode
           })
         }
       }
     })
 
     // TODO: add a mutex group to handle this
-    // autorun(() => { if (this.properties.isOrbitMode) this.properties.isPanMode = false })
+    // autorun(() => { if (this.props.isOrbitMode) this.props.isPanMode = false })
 
     // initialize history with dummy call of current value
     this.updateCamAngle.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
@@ -295,7 +296,7 @@ class RenderState {
   render() {
     this.renderer.render(this.scene, this.camera)
 
-    this.root.properties.count.value = this.root.count + 1
+    this.root.props.count.value = this.root.count + 1
     this.renderIsQueued = false
   }
 

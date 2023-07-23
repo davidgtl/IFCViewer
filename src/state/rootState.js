@@ -4,6 +4,7 @@ import fn from "@/fn"
 import RenderState from "./RenderState"
 import IFCParserState from "./IFCParserState"
 import OBJParserState from "./OBJParserState"
+import UIState from "./UIState"
 
 class RootState {
   constructor() {
@@ -12,6 +13,7 @@ class RootState {
     this.render = new RenderState(this)
     this.ifcParser = new IFCParserState(this)
     this.objParser = new OBJParserState(this)
+    this.ui = new UIState(this)
     this.count = 0
 
     this.registerModule(this, this, {
@@ -29,7 +31,7 @@ class RootState {
           symbolName: null,
         }
       },
-      properties: {
+      props: {
         count: {
           symbolName: null,
         }
@@ -109,11 +111,11 @@ class RootState {
         /*
           Property: value <=> UI
           why?: keep code locality, autogenerate UI
-          context: Each state object can have read/write(only) properties.
+          context: Each state object can have read/write(only) props.
                    The property can be passed to a DynPanel to be 
                    materialized into Dyn* components
         */
-        properties: {
+        props: {
           propName: {
             name: "Name in UI", // default: deCamelize(propName)
 
@@ -163,9 +165,9 @@ class RootState {
     }
     target.actions = actions
 
-    const properties = specs.properties
-    for (const propName in properties) {
-      const prop = properties[propName]
+    const props = specs.props
+    for (const propName in props) {
+      const prop = props[propName]
 
       fn.defaultsFor(prop, {
         name: deCamelize(propName),
@@ -190,7 +192,7 @@ class RootState {
 
       // hsTrackArgs[propName] = PROPERTY
     }
-    target.properties = properties
+    target.props = props
 
     makeObservable(target, mobxArgs)
     hsTrack(target, hsTrackArgs)
@@ -207,6 +209,13 @@ class RootState {
   }
   loadChurchSample() {
     this.objParser.loadFromURL("./samples/20221025SantAntiniDelAbad_Llombay1M_CC0.obj")
+  }
+
+  saveState(){
+    window.localStorage.setItem('state', JSON.stringify(showBanner))
+  }
+  loadState(){
+    JSON.parse(window.localStorage.getItem('state', (showBanner)))
   }
 }
 

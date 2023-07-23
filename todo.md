@@ -1,3 +1,7 @@
+- snap resize to integer * 1rem
+- parse indexx.css oklch to hex with vite
+- UI light/dark themes, adjustable font-size
+- tabs
 - list container + curried actions
 - touchEvents, try on mobile
 - UI: background, button, coarse-fine slider, state symbol
