@@ -37,7 +37,7 @@ const App = observer(({ }) => {
             <div key={k} dangerouslySetInnerHTML={svgs[k]} />
           ))}
         </div>
-        <DynPanel flow="col" style={{ width: "60rem" }} >
+        <DynPanel flow="col" style={{ width: "min(100vw, 60rem)" }} >
           <DynPanel flow="row" anchor="end">
             <DynPanel flow="row" isMutex={true}>
               <DynFlag property={rootState.ui.props.isThemeLight} />
