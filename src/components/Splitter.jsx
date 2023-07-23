@@ -5,15 +5,39 @@ import "./splitter.css"
 /**
   Splitter
   
-  adjusts the percentange of the left/right or top/bottom panels
+  adjusts the percentange of the prev/next panels
 */
-const Splitter = ({ neighbour1, neighbour2, flow = "row"}) => {
+const Splitter = ({ containerLength, getPrev, getNext, updatePrev, updateNext, flow = "row" }) => {
+
+  const startPos = useRef({ x: 0, y: 0 })
+  const startValues = useRef([0, 0])
+
+
+  const onMouseMove = (e) => {
+    const delta = flow == "row" ? e.screenX - startPos.x : e.screenY - startPos.y
+    const deltaRelative = 100 * delta / containerLength
+    updatePrev(startValues[0] + deltaRelative)
+    updateNext(startValues[1] - deltaRelative)
+  }
+  const onMouseUp = (e) => {
+    removeEventListener("mousemove", onMouseMove)
+    removeEventListener("mouseup", onMouseUp)
+    document.body.style.cursor = ''
+  }
+  const onMouseDown = (e) => {
+    startPos.x = e.screenX
+    startPos.y = e.screenY
+    startValues[0] = getPrev()
+    startValues[1] = getNext()
+    addEventListener("mousemove", onMouseMove)
+    addEventListener("mouseup", onMouseUp)
+    document.body.style.cursor = flow == "row" ? 'ew-resize' : "ns-resize"
+  }
+
   return (
-    <div className={"splitter " + flow } tabIndex={0} onMouseMove={
-      (e) => neighbour1.style.flex-basis = x%
-    }>
-      <svg viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0" y="0" width="100" height="10" rx="2" />
+    <div className={"splitter " + flow} tabIndex={0} onMouseDown={onMouseDown}>
+      <svg viewBox={flow == "row" ? "0 0 10 100" : "0 0 100 10"} xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width={flow == "row" ? 10 : 100} height={flow == "row" ? 100 : 10} rx="2" />
       </svg>
 
     </div >

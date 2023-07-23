@@ -95,13 +95,13 @@ function* weave(array, condition, element) {
   const endIndex = array.length - 1
 
 
-  if (condition(undefined, array[0])) {
+  if (condition(undefined, array[0], -1)) {
     yield element(undefined, array[0], -1)
   }
   for (let i = startIndex; i <= endIndex; i++) {
     yield array[i]
 
-    if (condition(array[i], array[i + 1])) {
+    if (condition(array[i], array[i + 1], i)) {
       yield element(array[i], array[i + 1], i)
     }
   }
@@ -136,6 +136,17 @@ function setPath(object, keys, value) {
   return res[keys.at(-1)]
 }
 
+/**
+  pipe(x, doA, doB, doC) ==
+  doC(doB(doA(x)))
+*/
+function pipe(x, ...transformations) {
+  for (const func of transformations) {
+    x = func(x)
+  }
+  return x
+}
 
 
-export default { condShort, codeDoc, defaultsFor, defaultValue, PATH, getPath, slice, weave, isnun, isnn, setPath }
+
+export default { condShort, codeDoc, defaultsFor, defaultValue, PATH, getPath, slice, weave, isnun, isnn, setPath, pipe }

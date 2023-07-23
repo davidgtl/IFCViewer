@@ -67,8 +67,8 @@ h1 {
 }
 
 .elem {
-  min-width: 3rem;
-  min-height: 3rem;
+  /* min-width: 3rem; */
+  /* min-height: 3rem; */
 }
 
 .dyntext input {

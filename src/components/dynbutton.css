@@ -1,4 +1,3 @@
-
 button {
   display: inline-flex;
   flex-flow: row nowrap;
@@ -10,6 +9,7 @@ button {
   background-color: var(--elem-bg-color);
   fill: white;
   height: 3rem;
+  width: max-content;
   padding: 0rem 1rem;
 
   border: 1px solid var(--elem-border-color);

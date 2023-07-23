@@ -1,4 +1,4 @@
-.splitter.row {
+.splitter.col {
   height: 0.3rem;
   background: var(--elem-border-color);
   width: 100%;
@@ -6,12 +6,28 @@
   cursor: ns-resize;
 }
 
-.splitter.row svg {
+.splitter.row {
+  width: 0.3rem;
+  background: var(--elem-border-color);
+  height: 100%;
+  position: relative;
+  cursor: ew-resize;
+}
+
+.splitter svg {
   position: absolute;
-  height: 0.2rem;
-  top: 0.05rem;
   fill: var(--elem-highlight-inactive-color);
 }
-.splitter.row:focus svg {
+.splitter.col svg {
+  height: 0.2rem;
+  top: 0.05rem;
+}
+
+.splitter.row svg {
+  width: 0.2rem;
+  left: 0.05rem;
+}
+
+.splitter:focus svg {
   fill: var(--elem-highlight-active-color);
 }
