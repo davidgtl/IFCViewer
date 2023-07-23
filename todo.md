@@ -1,5 +1,4 @@
-- panel { panel, panel} => { panel, gutter, panel } 
-- UI ligh/dark themes, adjustable font-size
+- UI light/dark themes, adjustable font-size
 - list container + curried actions
 - touchEvents, try on mobile
 - UI: background, button, coarse-fine slider, state symbol
