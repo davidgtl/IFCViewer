@@ -1,11 +1,11 @@
 .splitter {
-  background: var(--elem-border-color);
+  background: var(--separator-color);
   padding: 0.1rem;
   box-sizing: border-box;
 }
 
 .config-ui .splitter {
-  background: var(--elem-border-color);
+  background: var(--elem-bg-color);
 }
 
 .splitter.col {

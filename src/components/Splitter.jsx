@@ -14,6 +14,7 @@ const Splitter = ({ remUnit, containerLength, getPrev, getNext, updatePrev, upda
 
 
   const onMouseMove = (e) => {
+    e.preventDefault()
     const delta = flow == "row" ? e.screenX - startPos.x : e.screenY - startPos.y
     // const deltaRelative = delta / remUnit
     updatePrev(startValues[0] + Math.floor(delta / remUnit))
