@@ -1,3 +1,4 @@
+- add luminosity slider
 - parse index.css oklch to hex with vite
 - touchEvents, try on mobile
 - UI: coarse-fine slider

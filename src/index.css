@@ -38,77 +38,85 @@ body {
 
 .theme-dark {
   --main-hue: 267.5;
+  --main-lum: 28.3%; 
+  --text-lum: 95%;
   --text-hue: 220.5; /* less red than the main */
   --accent-hue: 45.2; /* contrast with the main */
-  --bg-color: oklch(28.3% 0.010 var(--main-hue)); /* mute */
-  --text-active-color: oklch(95% 0.015 var(--text-hue));
-  --text-inactive-color: oklch(95% 0.015 var(--text-hue));
+  --bg-color: oklch(var(--main-lum) 0.010 var(--main-hue)); /* mute */
+  --text-active-color: oklch(var(--text-lum) 0.015 var(--text-hue));
+  --text-inactive-color: oklch(var(--text-lum) 0.015 var(--text-hue));
   /* contrast both bg and text, helped by elem-border-color */
-  --elem-bg-color: oklch(37.3% 0.015 var(--main-hue)); 
-  --elem-bg-inactive-color: oklch(17.8% 0.015 var(--main-hue));
+  --elem-bg-color: oklch(calc(var(--main-lum) + 9%) 0.015 var(--main-hue)); 
+  --elem-bg-inactive-color: oklch(calc(var(--main-lum) + 1%) 0.015 var(--main-hue));
   /* use the contrasting accent */
-  --elem-highlight-active-color: oklch(67.64% 0.182 var(--accent-hue));
-  --elem-highlight-inactive-color: oklch(49.1% 0.085 var(--accent-hue));
+  --elem-highlight-active-color: oklch(calc(var(--main-lum) + 36%) 0.182 var(--accent-hue));
+  --elem-highlight-inactive-color: oklch(calc(var(--main-lum) + 18%) 0.06 var(--accent-hue));
   /* just enough to not notice */
-  --elem-border-color: oklch(32.3% 0.015 var(--main-hue));
-  --separator-color: oklch(32.3% 0.015 var(--main-hue));
+  --elem-border-color: oklch(calc(var(--main-lum) - 3%) 0.015 var(--main-hue));
+  --separator-color: oklch(calc(var(--main-lum) + 4%)  0.015 var(--main-hue));
 }
 
 .theme-light {
   --main-hue: 310.6;
-  --text-hue: 220.5; /* less red than the main */
-  --accent-hue: 267.9; /* contrast with the main */
-  --bg-color: oklch(79.8% 0.009 var(--main-hue)); /* mute */
-  --text-active-color: oklch(5% 0.015 var(--text-hue));
-  --text-inactive-color: oklch(5% 0.015 var(--text-hue));
+  --main-lum: 84.8%; 
+  --text-lum: 5%;
+  --text-hue: 220.5;
+  --accent-hue: 267.9; /* contrast with the main, enough chroma when dark */
+  --bg-color: oklch(var(--main-lum) 0.009 var(--main-hue)); /* mute */
+  --text-active-color: oklch(var(--text-lum) 0.015 var(--text-hue));
+  --text-inactive-color: oklch(var(--text-lum) 0.015 var(--text-hue));
   /* contrast both bg and text, helped by elem-border-color */
-  --elem-bg-color: oklch(88.8% 0.009 var(--main-hue)); 
-  --elem-bg-inactive-color: oklch(80.8% 0.010 var(--main-hue));
+  --elem-bg-color: oklch(calc(var(--main-lum) + 9%) 0.009 var(--main-hue)); 
+  --elem-bg-inactive-color: oklch(calc(var(--main-lum) + 1%) 0.010 var(--main-hue));
   /* use the contrasting accent */
-  --elem-highlight-active-color: oklch(43.9% 0.20 var(--accent-hue));
-  --elem-highlight-inactive-color: oklch(68.1% 0.04 var(--accent-hue));
+  --elem-highlight-active-color: oklch(calc(var(--main-lum) - 36%) 0.20 var(--accent-hue));
+  --elem-highlight-inactive-color: oklch(calc(var(--main-lum) - 18%) 0.06 var(--accent-hue));
   /* just enough to not notice */
-  --elem-border-color:oklch(75.8% 0.009 var(--main-hue)); 
-  --separator-color: oklch(75.8% 0.015 var(--main-hue));
+  --elem-border-color:oklch(calc(var(--main-lum) - 8%) 0.009 var(--main-hue)); 
+  --separator-color: oklch(calc(var(--main-lum) - 4%) 0.015 var(--main-hue));
 }
 
  @media (prefers-color-scheme: dark) {
   .theme-system {
     --main-hue: 267.5;
+    --main-lum: 28.3%; 
+    --text-lum: 95%;
     --text-hue: 220.5; /* less red than the main */
     --accent-hue: 45.2; /* contrast with the main */
-    --bg-color: oklch(28.3% 0.010 var(--main-hue)); /* mute */
-    --text-active-color: oklch(95% 0.015 var(--text-hue));
-    --text-inactive-color: oklch(95% 0.015 var(--text-hue));
+    --bg-color: oklch(var(--main-lum) 0.010 var(--main-hue)); /* mute */
+    --text-active-color: oklch(var(--text-lum) 0.015 var(--text-hue));
+    --text-inactive-color: oklch(var(--text-lum) 0.015 var(--text-hue));
     /* contrast both bg and text, helped by elem-border-color */
-    --elem-bg-color: oklch(37.3% 0.015 var(--main-hue)); 
-    --elem-bg-inactive-color: oklch(17.8% 0.015 var(--main-hue));
+    --elem-bg-color: oklch(calc(var(--main-lum) + 9%) 0.015 var(--main-hue)); 
+    --elem-bg-inactive-color: oklch(calc(var(--main-lum) + 1%) 0.015 var(--main-hue));
     /* use the contrasting accent */
-    --elem-highlight-active-color: oklch(67.64% 0.182 var(--accent-hue));
-    --elem-highlight-inactive-color: oklch(49.1% 0.085 var(--accent-hue));
+    --elem-highlight-active-color: oklch(calc(var(--main-lum) + 36%) 0.182 var(--accent-hue));
+    --elem-highlight-inactive-color: oklch(calc(var(--main-lum) + 18%) 0.06 var(--accent-hue));
     /* just enough to not notice */
-    --elem-border-color: oklch(32.3% 0.015 var(--main-hue));
-    --separator-color: oklch(32.3% 0.015 var(--main-hue));
+    --elem-border-color: oklch(calc(var(--main-lum) - 3%) 0.015 var(--main-hue));
+    --separator-color: oklch(calc(var(--main-lum) + 4%)  0.015 var(--main-hue));
   }
 }
 
 @media (prefers-color-scheme: light) {
   .theme-system {
     --main-hue: 310.6;
-    --text-hue: 220.5; /* less red than the main */
-    --accent-hue: 267.9; /* contrast with the main */
-    --bg-color: oklch(79.8% 0.009 var(--main-hue)); /* mute */
-    --text-active-color: oklch(5% 0.015 var(--text-hue));
-    --text-inactive-color: oklch(5% 0.015 var(--text-hue));
+    --main-lum: 84.8%; 
+    --text-lum: 5%;
+    --text-hue: 220.5;
+    --accent-hue: 267.9; /* contrast with the main, enough chroma when dark */
+    --bg-color: oklch(var(--main-lum) 0.009 var(--main-hue)); /* mute */
+    --text-active-color: oklch(var(--text-lum) 0.015 var(--text-hue));
+    --text-inactive-color: oklch(var(--text-lum) 0.015 var(--text-hue));
     /* contrast both bg and text, helped by elem-border-color */
-    --elem-bg-color: oklch(88.8% 0.009 var(--main-hue)); 
-    --elem-bg-inactive-color: oklch(80.8% 0.010 var(--main-hue));
+    --elem-bg-color: oklch(calc(var(--main-lum) + 9%) 0.009 var(--main-hue)); 
+    --elem-bg-inactive-color: oklch(calc(var(--main-lum) + 1%) 0.010 var(--main-hue));
     /* use the contrasting accent */
-    --elem-highlight-active-color: oklch(43.9% 0.20 var(--accent-hue));
-    --elem-highlight-inactive-color: oklch(68.1% 0.04 var(--accent-hue));
+    --elem-highlight-active-color: oklch(calc(var(--main-lum) - 36%) 0.20 var(--accent-hue));
+    --elem-highlight-inactive-color: oklch(calc(var(--main-lum) - 18%) 0.06 var(--accent-hue));
     /* just enough to not notice */
-    --elem-border-color:oklch(75.8% 0.009 var(--main-hue)); 
-    --separator-color: oklch(75.8% 0.015 var(--main-hue));
+    --elem-border-color:oklch(calc(var(--main-lum) - 8%) 0.009 var(--main-hue)); 
+    --separator-color: oklch(calc(var(--main-lum) - 4%) 0.015 var(--main-hue));
   }
 }
 
