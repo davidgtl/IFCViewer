@@ -1,3 +1,4 @@
+- UI visual unit 1 em, UI interactive unit 3 em, "Oops!" button
 - css show icon if overflowing
 - touchEvents, try on mobile
 - precise slider: line + upside down triangle up to 1em = 1 step
