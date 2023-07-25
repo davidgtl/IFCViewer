@@ -1,6 +1,9 @@
+- css show icon if overflowing
+- touchEvents, try on mobile
+- precise slider: line + upside down triangle up to 1em = 1 step
+- color space features: iso intensity lines, iso hue lines, uniform luma contrast, uniform chroma constrast
 - add luminosity slider
 - parse index.css oklch to hex with vite
-- touchEvents, try on mobile
 - UI: coarse-fine slider
 ----- below this UI requires state per component ------
 - tabs

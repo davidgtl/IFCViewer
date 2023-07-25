@@ -13,6 +13,10 @@ class UIState {
     this.isThemeDark = true
     this.isThemeSystem = false
     this.isConfigUI = false
+    /* index.css: --main-lum-dark */
+    this.mainLumDark = 28.3
+    /* index.css: --main-lum-light */
+    this.mainLumLight = 84.8
 
 
     root.registerModule(root, this, {

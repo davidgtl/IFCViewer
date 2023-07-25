@@ -61,6 +61,9 @@ const App = observer(({ }) => {
             <DynButton action={rootState.render.actions.zoomIn} />
             <DynButton action={rootState.render.actions.zoomOut} />
           </DynPanel>
+          <DynPanel flow="row">
+            <DynSlider/>
+          </DynPanel>
           <DynPanel flow="col" flexBasis={85} style={{ alignItems: "center" }}>
             <div ref={canvasContainerRef} />
             <h1 style={{ alignSelf: "center" }}>Vite + React</h1>
