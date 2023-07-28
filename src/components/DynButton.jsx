@@ -1,7 +1,7 @@
 import { observer } from "mobx-react"
 import { useRef, useEffect } from 'react'
 import "./dynbutton.css"
-
+import Symbol from "@/components/Symbol";
 /**
   Dynamic Button
   takes the most appropiate form given its space
@@ -16,8 +16,8 @@ import "./dynbutton.css"
 const DynButton = ({ action }) => {
   return (
     <button className="elem" onClick={action.onDone}>
-      {action.symbolId && (<svg><use href={action.symbolId} /></svg>)}
-      {action.symbolId && (<span className="spacer"/>)}
+      {action.symbolId && <Symbol symbolId={action.symbolId} />}
+      {action.symbolId && (<span className="spacer" />)}
       <span>{action.name}</span>
     </button>
   )

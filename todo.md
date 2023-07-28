@@ -1,3 +1,4 @@
+- click & move controller
 - UI visual unit 1 em, UI interactive unit 3 em, "Oops!" button
 - css show icon if overflowing
 - touchEvents, try on mobile
@@ -14,4 +15,5 @@
 - breadcrumbs for each state field/action?
 - event parse the IFC file into triangles
 - list container + curried actions
+
 

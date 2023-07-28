@@ -4,6 +4,12 @@ import "./splitter.css"
 
 /**
   Splitter
+
+  ----------------
+  |S Text: value |
+  ----------------
+  |    |         |
+  ----------------
   
   adjusts the percentange of the prev/next panels
 */
@@ -15,9 +21,17 @@ const DynSlider = ({ remUnit = 16, containerLength, valueMin = 0, valueMax = 100
   const startPos = useRef({ x: 0, y: 0 })
   const startValue = useRef(45)
   const value = useRef(0)
+  const isDragging = useRef(false)
   const isRelative = useRef(false)
   const [forceUpdateVal, forceUpdate] = useState(0)
 
+
+  const updateAbs = (e, offT) => {
+    const delta = flow == "row" ?
+      (e.clientX - offT.left - 1.2 * remUnit) / (offT.width - 3.0 * remUnit) // 1.2 = 1 iu padding + 0.2 border padding
+      : (e.clientY - offT.top - 1.2 * remUnit) / (offT.height - 2.4 * remUnit)
+    value.current = Math.max(Math.min(Math.floor(valueMin + (valueMax - valueMin) * delta), valueMax), valueMin)
+  }
 
   const onMouseMove = (e) => {
     e.preventDefault()
@@ -31,9 +45,7 @@ const DynSlider = ({ remUnit = 16, containerLength, valueMin = 0, valueMax = 100
         Math.max(Math.min(Math.floor(startValue.current + deltaRelative), valueMax), valueMin)
     } else {
       const offT = containerRef.current.getBoundingClientRect()
-      const delta = flow == "row" ? (e.clientX - offT.left) / offT.width : (e.clientY - offT.top) / offT.height
-
-      value.current = Math.max(Math.min(Math.floor(valueMin + (valueMax - valueMin) * delta), valueMax), valueMin)
+      updateAbs(e, offT)
     }
     forceUpdate(value.current)
   }
@@ -41,23 +53,24 @@ const DynSlider = ({ remUnit = 16, containerLength, valueMin = 0, valueMax = 100
     removeEventListener("mousemove", onMouseMove)
     removeEventListener("mouseup", onMouseUp)
     document.body.style.cursor = ''
+    isDragging.current = false
+    forceUpdate(null)
   }
   const onMouseDown = (e) => {
     startPos.x = e.screenX
     startPos.y = e.screenY
     startValue.current = value.current
+    isDragging.current = true
     addEventListener("mousemove", onMouseMove)
     addEventListener("mouseup", onMouseUp)
     const offT = containerRef.current.getBoundingClientRect()
     const offX = e.clientX - offT.left
     const offY = e.clientY - offT.top
 
-    isRelative.current = e.target.nodeName == "rect"
+    isRelative.current = e.target.nodeName == "path"
     console.log(e)
     if (!isRelative.current) {
-      const delta = flow == "row" ? (e.clientX - offT.left) / offT.width : (e.clientY - offT.top) / offT.height
-
-      value.current = Math.floor(valueMin + (valueMax - valueMin) * delta)
+      updateAbs(e, offT)
       forceUpdate(value.current)
     }
 
@@ -65,13 +78,22 @@ const DynSlider = ({ remUnit = 16, containerLength, valueMin = 0, valueMax = 100
 
   }
 
+  /*
+    TODO: make font feel less squeezed
+    TODO: match the rounded corners
+    TODO: standardize paddings -- UIConfig?
+    TODO: fix on light theme -- introduce active/inactive colors 
+  */
+
   return (
     <div ref={containerRef} className={"slider " + flow} tabIndex={0} onMouseDown={onMouseDown}
       style={{
         width: "10rem",
         height: "3rem",
         background: "var(--elem-bg-color)",
-        position: "relative"
+        position: "relative",
+        border: "1px solid var(--elem-border-color)",
+        borderRadius: "0.5rem"
       }}>
       {/* <span style={{
         position: "absolute",
@@ -85,14 +107,47 @@ const DynSlider = ({ remUnit = 16, containerLength, valueMin = 0, valueMax = 100
         position: "absolute",
         right: "0.2em"
       }}>{`[${valueMin}, ${valueMax}]`}</span> */}
+      <svg className="symbol"><use href="#symbol_pan" /></svg>
+      <span style={{
+        position: "relative",
+        zIndex: 5,
+        pointerEvents: "none"
+      }}
+      >Font Size: 20px</span>
       <svg style={{
+        zIndex: 2,
+        position: "absolute",
+        left: 0,
         width: "10rem",
         height: "3rem",
         stroke: "var(--text-inactive-color)",
         fill: "var(--text-inactive-color)",
       }} viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
-        <line x1="5" y1="15" x2="95" y2="15"/>
-        <rect x={2 + value.current * 0.70} y="2" width={26} height={26} rx="2" />
+        {/* <rect x={2 + value.current * 0.70} y={2} width={26} height={13} rx={2} /> */}
+        <path d={`M${2 + value.current * 0.70},15 h26 v-11 a 2 2 -90 0 0 -2,-2 h-22 a 2 2 -90 0 0 -2,2 v11`}
+          style={{
+            // fill: isDragging.current ? "var(--text-inactive-color)" : "var(--elem-bg-color)",
+            // stroke: isDragging.current ? "var(--text-inactive-color)" : "var(--elem-bg-color)",
+            fill: "var(--elem-bg-color)",
+            stroke: isDragging.current ? "var(--elem-highlight-inactive-color)" : "var(--elem-bg-color)",
+          }} />
+
+        <path style={{
+          // fill: "var(--elem-highlight-inactive-color)",
+          // stroke: "var(--elem-highlight-inactive-color)",
+          fill: isDragging.current ? "var(--elem-highlight-active-color)" : "var(--elem-highlight-inactive-color)",
+          stroke: isDragging.current ? "var(--elem-highlight-active-color)" : "var(--elem-highlight-inactive-color)",
+        }} d={`M${2 + value.current * 0.70},15 h26 v11 a 2 2 -90 0 1 -2,2 h-22 a 2 2 -90 0 1 -2,-2 v-11`} />
+        {/* <rect x={2 + value.current * 0.70} y={15} width={26} height={13} rx={2} /> */}
+        <line x1="13" y1="15" x2="83" y2="15" style={{
+          //"var(--elem-highlight-inactive-color)"
+          // stroke: isDragging.current ? "var(--elem-highlight-active-color)" : "var(--text-inactive-color)"
+          stroke: "var(--text-inactive-color)"
+        }} />
+        <line x1={13 + value.current * 0.7} y1="15" x2={13 + value.current * 0.7} y2="28" style={{
+          // stroke: isDragging.current ? "var(--elem-highlight-active-color)" : "var(--text-inactive-color)"
+          stroke: "var(--text-inactive-color)"
+        }} />
       </svg>
     </div >
   )

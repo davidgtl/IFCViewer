@@ -30,8 +30,3 @@ button:focus,
 button:focus-visible {
   outline: #53a8f2 solid 2px;
 }
-
-button svg {
-  height: 1.5rem;
-  width: 1.5rem;
-}

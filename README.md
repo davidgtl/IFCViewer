@@ -19,4 +19,10 @@ Built with [Vite](https://vitejs.dev/), [React](https://react.dev/), [MobX](http
  * A history tracker(undo/redo) in [src/state/history.js](src/state/history.js)
  * A broken IFC mini Parser in [src/state/IFCParserState.js](src/state/IFCParserState.js)
 
-[Credits](CREDITS.md)
+# [License](LICENSE)
+This project: GPLv3 -- do whatever, no guarantees. When distributing your work, attribute and keep it free.
+Libraries: MIT -- do whatever, no guarantees. When distributing your work, attribute.
+SVG assets: CC BY 3.0 -- do whatever. When distributing your work, attribute and keep it free.
+Others: unrestricted
+
+## [Credits](CREDITS.md)
