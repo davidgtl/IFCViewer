@@ -1,7 +1,7 @@
 
 /**
- * return first case[1] where case[0] is true 
- */
+  return first case[1] where case[0] is true 
+*/
 function condShort(...cases) {
   for (const c in cases) {
     if (cases[c][0] === true) {
@@ -11,10 +11,45 @@ function condShort(...cases) {
   throw new Error("No default was provided")
 }
 
+/**
+  provide syntax highlighting in IDE for a code example
+  should compile to nothing after dead code elimination
+*/
 function codeDoc(dummyArgs) {
   return;
 }
 
+/**
+  not undefined: 
+  array.every(x => x !== undefined)
+*/
+ function isnun(...array) {
+   return array.every(x => x !== undefined)
+}
+
+/**
+  not null: 
+  array.every(x => x !== null)
+*/
+function isnn(...array) {
+  return array.every(x => x !== null)
+}
+
+/**
+  is defined:
+  array.every(x => x !== undefined && x !== null)
+*/
+function isdef(...array) {
+  return array.every(x => x !== undefined && x !== null)
+}
+
+/**
+  (  
+    { a: 99, b: null, c: undefined }, 
+    { a: 1,  b: 2,    c: 3 }
+  ) => 
+    { a: 99, b: null, c: 3 } 
+*/
 function defaultsFor(object, defaults) {
 
   for (const key in defaults) {
@@ -24,11 +59,62 @@ function defaultsFor(object, defaults) {
   }
 }
 
+
+/**
+  value ?? defaultValue, but only for undefined
+*/
 function defaultValue(value, defaultValue) {
   if (value === undefined) {
     return defaultValue
   } else {
     return value
+  }
+}
+
+/**
+  create a view over const array (without copying like Array.slice)
+  
+  both indexes are INCLUSIVE
+  negative values are calculated from the end
+*/
+function* slice(array, startIndex, endIndex) {
+  if (startIndex < 0) {
+    startIndex = Math.Max(0, array.length + startIndex)
+  }
+  if (endIndex < 0) {
+    endIndex = Math.Max(0, array.length + endIndex)
+  }
+  for (let i = startIndex; i <= endIndex; i++) {
+    yield array[i]
+  }
+}
+
+
+/**
+  create iterable view over const array 
+    inserting element(left, right, index)
+    between left and right 
+    where condition(left, right)
+  
+  left and right will be *undefined* for first/last position
+  
+  given [..., 3, 4, ...]
+  where condition(3,4) == true  => [..., 3, element(3,4), 4, ...]
+  where condition(3,4) == false => [..., 3,               4, ...] 
+ */
+function* weave(array, condition, element) {
+  const startIndex = 0
+  const endIndex = array.length - 1
+
+  if (condition(undefined, array[0], -1)) {
+    yield element(undefined, array[0], -1)
+  }
+  for (let i = startIndex; i <= endIndex; i++) {
+    yield array[i]
+
+    if (condition(array[i], array[i + 1], i)) {
+      yield element(array[i], array[i + 1], i)
+    }
   }
 }
 
@@ -54,8 +140,11 @@ const PATH = new Proxy(
       )
     }
   }
-);
+)
 
+/**
+  (x, ['a','b','c','d']) => x.a.b.c.d
+*/
 function getPath(object, keys) {
   let res = object
   for (const key in keys) {
@@ -65,69 +154,8 @@ function getPath(object, keys) {
 }
 
 /**
-  create a view over the array without copying
-  both indexes are inclusive
-  negative values are calculated from the end
+  (x, ['a','b','c','d'], value) => x.a.b.c.d = value
 */
-function* slice(array, startIndex, endIndex) {
-  if (startIndex < 0) {
-    startIndex = Math.Max(0, array.length + startIndex)
-  }
-  if (endIndex < 0) {
-    endIndex = Math.Max(0, array.length + endIndex)
-  }
-  for (let i = startIndex; i <= endIndex; i++) {
-    yield array[i]
-  }
-}
-
-/**
-  * create view over array with element(left, right, index)
-  * inserted between elements where condition(left, right)
-  * undefined is the left/right sentinel for start and end
-  * 
-  * [..., 3, 4, ...] =>
-  * cond(3,4) == false: [..., 3, 4, ...] 
-  * cond(3,4) == true: [..., 3, elem(3,4), 4, ...]
- */
-function* weave(array, condition, element) {
-  const startIndex = 0
-  const endIndex = array.length - 1
-
-
-  if (condition(undefined, array[0], -1)) {
-    yield element(undefined, array[0], -1)
-  }
-  for (let i = startIndex; i <= endIndex; i++) {
-    yield array[i]
-
-    if (condition(array[i], array[i + 1], i)) {
-      yield element(array[i], array[i + 1], i)
-    }
-  }
-}
-
-/**
-  array.every(x => x !== undefined)
-*/
-function isnun(...array) {
-  return array.every(x => x !== undefined)
-}
-
-/**
- array.every(x => x != null)
- */
-function isnn(...array) {
-  return array.every(x => x !== null)
-}
-
-/**
-  array.every(x => x !== undefined)
-*/
-function isdef(...array) {
-  return array.every(x => x !== undefined)
-}
-
 function setPath(object, keys, value) {
   let res = object
   for (const key of slice(keys, 0, -2)) {
@@ -138,7 +166,7 @@ function setPath(object, keys, value) {
 
 /**
   pipe(x, doA, doB, doC) ==
-  doC(doB(doA(x)))
+  doC( doB( doA( x )))
 */
 function pipe(x, ...transformations) {
   for (const func of transformations) {
@@ -147,6 +175,4 @@ function pipe(x, ...transformations) {
   return x
 }
 
-
-
-export default { condShort, codeDoc, defaultsFor, defaultValue, PATH, getPath, slice, weave, isnun, isnn, setPath, pipe }
+export default { condShort, codeDoc, isnun, isnn, isdef, defaultsFor, defaultValue, slice, weave, PATH, getPath, setPath, pipe }
