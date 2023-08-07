@@ -1,0 +1,36 @@
+.slider {
+  width: 10rem;
+  height: 3rem;
+  background: var(--elem-bg-color);
+  position: relative;
+  border: 1px solid var(--elem-border-color);
+  border-radius: 0.5rem;
+}
+
+.slider_knob {
+  position: absolute;
+  top: 0.2rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid var(--elem-border-color);
+  border-radius: 0.5rem;
+}
+
+.slider_pointer {
+  position: absolute;
+  left: 1.2rem;
+  top: 0.7rem;
+  width: 0rem;
+  height: 1rem;
+  border-left: 1px solid var(--text-inactive-color);
+  border-radius: 0rem;
+  pointer-events: none;
+}
+
+.slider_trackBar {
+  position: absolute;
+  height: 0rem;
+  border-top: 1px solid var(--text-inactive-color);
+  border-radius: 0rem;
+  pointer-events: none;
+}

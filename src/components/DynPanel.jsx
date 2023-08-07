@@ -2,7 +2,7 @@ import { observer } from "mobx-react"
 import { useRef, useState, useEffect, cloneElement, forwardRef } from 'react'
 import Splitter from '@/components/Splitter'
 import fn from '@/fn'
-import "./dynpanel.css"
+import "./DynPanel.css"
 
 /**
   Dynamic Panel

@@ -21,7 +21,7 @@ const clampCircular = (x, xmin, xmax) => {
     set it xmin or xmax
 */
 function clamp(x, xmin, xmax) {
-  return Math.min(Math.Max(x, xmin), xmax)
+  return Math.min(Math.max(x, xmin), xmax)
 }
 
 /**

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react"
 import { useRef, useEffect } from 'react'
-import "./dynbutton.css"
 import Symbol from "@/components/Symbol";
+import "./DynButton.css"
 /**
   Dynamic Button
   takes the most appropiate form given its space

@@ -1,7 +1,7 @@
 /**
   Symbol
 */
-import "./symbol.css"
+import "./Symbol.css"
 
 const Symbol = ({ symbolId }) => {
   return (

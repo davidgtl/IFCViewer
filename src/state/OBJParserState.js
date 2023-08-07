@@ -1,11 +1,10 @@
-import { makeObservable, action, autorun, reaction } from "mobx"
+import registerModule from "@/framework/registerModule"
+import { makeObservable, action, reaction } from "mobx"
 import * as tjs from 'three'
-import { clampCircular, TAU, TAU4 } from "@/mathUtils"
-import { ACTION, hsTrack } from "./history"
 
 class OBJParserState {
 
-  constructor(root) {
+  constructor(root, parent) {
     this.root = root
 
     this.fileContent = null
@@ -13,14 +12,20 @@ class OBJParserState {
     this.faces = null
     this.count = 0
 
+    this._module = registerModule(root, parent, this, {
+      actions:{
+        loadFromURL:{
+          symbolName:null
+        }
+      }
+    })
     makeObservable(this, {
       fileContent: true,
-      loadFromURL: true,
       processContent: true,
     })
 
     // parser chain
-    reaction(() => this.fileContent, () => this.processContent())
+    reaction(() => this.fileContent, action(() => this.processContent()))
   }
 
   loadFromURL(url) {
@@ -89,9 +94,9 @@ class OBJParserState {
 
     const materialCustom = new tjs.MeshLambertMaterial({ color: 0xCC5511 })//side: tjs.DoubleSide
     const mesh = new tjs.Mesh(geometryCustom, materialCustom);
-    this.root.render.scene.add(mesh)
+    this.root.render._target.scene.add(mesh)
 
-    this.root.render.focusObject()
+    this.root.render.focusObject.action()
 
 
   }

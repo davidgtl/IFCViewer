@@ -1,6 +1,6 @@
 import { observer } from "mobx-react"
 import { useRef, useEffect } from 'react'
-import "./splitter.css"
+import "./Splitter.css"
 
 /**
   Splitter

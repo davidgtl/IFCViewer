@@ -14,15 +14,16 @@ import DynSlider from "@/components/DynSlider"
 */
 const PerceptualColorSpace = ({ }) => {
   return (
-    <DynPanel>
-      <DynSlider property={
-        {
-          value:50,
-          valueMin: 0,
-          valueMax: 255,
-        }
-      }></DynSlider>
-    </DynPanel>
+    <div></div>
+    // <DynPanel>
+    //   <DynSlider property={
+    //     {
+    //       value:50,
+    //       valueMin: 0,
+    //       valueMax: 255,
+    //     }
+    //   }></DynSlider>
+    // </DynPanel>
   )
 }
 

@@ -12,6 +12,7 @@ Explore 3D Models
 Built with [Vite](https://vitejs.dev/), [React](https://react.dev/), [MobX](https://mobx.js.org/README.html) and [three.js](https://threejs.org/)
 
 ## Sightseeing
+ [VSCode](https://code.visualstudio.com/) with [JSDoc Markdown highlighting](https://marketplace.visualstudio.com/items?itemName=bierner.jsdoc-markdown-highlighting) is recommended for exploring the code
  * A few functional helpers in [src/fn.js](src/fn.js)
  * A mini module framework(registerModule) in [src/state/rootState.js](src/state/rootState.js)
  * A simple, greedy triangulation algorithm in [src/algo/triangulatePotato.js](src/algo/triangulatePotato.js)
