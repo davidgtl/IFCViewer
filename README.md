@@ -21,7 +21,7 @@ Built with [Vite](https://vitejs.dev/), [React](https://react.dev/), [MobX](http
  * A few functional helpers in [src/fn.js](src/fn.js)
  * A simple, greedy triangulation algorithm in [src/algo/triangulatePotato.js](src/algo/triangulatePotato.js)
  * An SVG embedder build step in [src/plugins/svgSymbols.js](src/plugins/svgSymbols.js)
- * A .obj mini parser in [src/state/OBJParserState.js](src/state/OBJParserState.js)
+ * Procedural theme color generation in [src/index.css](src/index.css) (almost perceptual color space)
 
 ## Roadmap
  [todo.md](todo.md)
