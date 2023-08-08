@@ -20,18 +20,20 @@ const App = observer(({ }) => {
 
   useEffect(() => {
     const container = canvasContainerRef.current
-    container.appendChild(rootState.render.domElement)
-    return () => container.removeChild(rootState.render.domElement)
+    container.appendChild(rootState.render._target.renderer.domElement)
+    return () => container.removeChild(rootState.render._target.renderer.domElement)
   }, [])
 
   return (
     <>
-      <div className={'main' + (rootState.ui.props.isConfigUI.value ? ' config-ui' : '') + fn.condShort(
-        [rootState.ui.props.isThemeLight.value, " theme-light"],
-        [rootState.ui.props.isThemeDark.value, " theme-dark"],
-        [rootState.ui.props.isThemeSystem.value, " theme-system"],
+      <div className={'main' + (rootState.ui.isConfigUI.obs ? ' config-ui' : '') + fn.condShort(
+        [rootState.ui.isThemeLight.obs, " theme-light"],
+        [rootState.ui.isThemeDark.obs, " theme-dark"],
+        [rootState.ui.isThemeSystem.obs, " theme-system"],
         [true, " theme-dark"]
-      )} >
+      )} style={{
+        "--layout-vUnit": "black"
+      }} >
         <div style={{ display: "none" }}>
           {Object.keys(svgs).map((k) => (
             <div key={k} dangerouslySetInnerHTML={svgs[k]} />
@@ -40,38 +42,51 @@ const App = observer(({ }) => {
         <DynPanel flow="col" style={{ width: "min(100vw, 60rem)" }} >
           <DynPanel flow="row" anchor="end">
             <DynPanel flow="row" isMutex={true}>
-              <DynFlag property={rootState.ui.props.isThemeLight} />
-              <DynFlag property={rootState.ui.props.isThemeDark} />
-              <DynFlag property={rootState.ui.props.isThemeSystem} />
+              <DynFlag property={rootState.ui.isThemeLight} />
+              <DynFlag property={rootState.ui.isThemeDark} />
+              <DynFlag property={rootState.ui.isThemeSystem} />
             </DynPanel>
-            <DynFlag property={rootState.ui.props.isConfigUI} />
+            <DynFlag property={rootState.ui.isConfigUI} />
+          </DynPanel>
+          <DynPanel flow="row" isVisible={rootState.ui.isConfigUI.obs}>
+            {"Visual Unit:"}
+            <DynSlider property={rootState.ui.vUnit} presenter={rootState.ui.presenters.standardSlider} />
+            {"Interaction Unit:"}
+            <DynSlider property={rootState.ui.iUnit} presenter={rootState.ui.presenters.standardSlider} />
           </DynPanel>
           <DynPanel flow="row">
-            <DynButton action={rootState.render.actions.randomCameraAngle} />
-            <DynButton action={rootState.render.actions.prevCamAngle} />
-            <DynButton action={rootState.render.actions.nextCamAngle} />
-            <DynButton action={rootState.render.actions.focusObject} />
-            <DynButton action={rootState.render.actions.normalizeObject} />
+            <DynButton action={rootState.render.randomCameraAngle} />
+            <DynButton action={rootState.render.prevCamAngle} />
+            <DynButton action={rootState.render.nextCamAngle} />
+            <DynButton action={rootState.render.focusObject} />
+            <DynButton action={rootState.render.normalizeObject} />
           </DynPanel>
           <DynPanel flow="row">
             <DynPanel flow="row" isMutex={true}>
-              <DynFlag property={rootState.render.props.isOrbitMode} />
-              <DynFlag property={rootState.render.props.isPanMode} />
+              <DynFlag property={rootState.render.isOrbitMode} />
+              <DynFlag property={rootState.render.isPanMode} />
             </DynPanel>
-            <DynButton action={rootState.render.actions.zoomIn} />
-            <DynButton action={rootState.render.actions.zoomOut} />
+            <DynButton action={rootState.render.zoomIn} />
+            <DynButton action={rootState.render.zoomOut} />
+
+            <DynSlider property={rootState.render.focusDistance} presenter={rootState.ui.presenters.standardSlider} />
+
           </DynPanel>
           <DynPanel flow="col" flexBasis={85} style={{ alignItems: "center" }}>
             <div ref={canvasContainerRef} />
             <h1 style={{ alignSelf: "center" }}>Vite + React</h1>
             <div className="card" style={{ 'maxWidth': '640px' }}>
-              <button onClick={() => rootState.render.invalidate()}>
-                render count is {rootState.props.count.value}
+              <button onClick={() => rootState.render.invalidate.action()}
+                style={{
+                  color: "var(--text-inactive-color)"
+                }}>
+                render count is {rootState.count.obs}
               </button>
-              <DynButton action={rootState.actions.loadLucySample} />
-              <DynButton action={rootState.actions.loadInstituteSample} />
-              <DynButton action={rootState.actions.loadHausSample} />
-              <DynButton action={rootState.actions.loadChurchSample} />
+              <DynButton action={rootState.render.invalidate} />
+              <DynButton action={rootState.loadLucySample} />
+              {/* <DynButton action={rootState.loadInstituteSample} /> */}
+              {/* <DynButton action={rootState.loadHausSample} /> */}
+              <DynButton action={rootState.loadChurchSample} />
             </div>
             <PerceptualColorSpace />
           </DynPanel>

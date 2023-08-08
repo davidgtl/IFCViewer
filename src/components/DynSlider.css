@@ -1,0 +1,42 @@
+.slider {
+  display: inline-flex;
+  box-sizing: border-box;
+  
+  height: var(--elemHeight);
+  background: var(--elem-bg-color);
+  position: relative;
+  border: 1px solid var(--elem-border-color);
+  border-radius: 0.5rem;
+  padding: 0px;
+}
+
+.slider_knob {
+  box-sizing: border-box;
+  position: absolute;
+  width: var(--elemWidth);
+  top: calc(var(--elemWidth) * 0.05 - 1px);
+  height: calc(var(--elemHeight) * 0.9);
+  border: 1px solid var(--elem-border-color);
+  border-radius: 0.5rem;
+}
+
+.slider_pointer {
+  position: absolute;
+  left: calc(var(--elemWidth) * 0.5 - 1px);
+  top: calc(var(--elemWidth) * 0.1 + 1px);
+  width: 0rem;
+  height: calc(var(--elemHeight) * 0.6);
+  border-left: 1px solid var(--text-inactive-color);
+  border-radius: 0rem;
+  pointer-events: none;
+}
+
+.slider_trackBar {
+  left: calc(var(--elemWidth) * 0.5 + 1px);
+  top: calc(var(--elemWidth) * 0.5 + 1px);
+  position: absolute;
+  height: 0rem;
+  border-top: 1px solid var(--text-inactive-color);
+  border-radius: 0rem;
+  pointer-events: none;
+}

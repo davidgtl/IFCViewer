@@ -10,6 +10,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  /* UIState.js: mainLumLight */
+  --main-lum-light: 84.8%;
+  /* UIState.js: mainLumDark */
+  --main-lum-dark: 28.3%;
 }
 
 body {
@@ -30,6 +34,13 @@ body {
   min-height: max-content;
   min-width: max-content;
   background: var(--bg-color);
+
+  --paddingLeft: calc(max(0px, var(--iUnit) - var(--vUnit)) * 0.5);
+  --paddingRight: calc(max(0px, var(--iUnit) - var(--vUnit)) * 0.5);
+  --paddingTop: calc(max(0px, var(--iUnit) - var(--vUnit)) * 0.5);
+  --paddingBottom: calc(max(0px, var(--iUnit) - var(--vUnit)) * 0.5);
+  --elemHeight: calc(max(var(--iUnit), var(--vUnit)));
+  --elemWidth: calc(max(var(--iUnit), var(--vUnit)));
 }
 
 .elem {
@@ -38,85 +49,91 @@ body {
 
 .theme-dark {
   --main-hue: 267.5;
-  --main-lum: 28.3%; 
   --text-lum: 95%;
-  --text-hue: 220.5; /* less red than the main */
-  --accent-hue: 45.2; /* contrast with the main */
-  --bg-color: oklch(var(--main-lum) 0.010 var(--main-hue)); /* mute */
+  --text-hue: 220.5;
+  /* less red than the main */
+  --accent-hue: 45.2;
+  /* contrast with the main */
+  --bg-color: oklch(var(--main-lum-dark) 0.010 var(--main-hue));
+  /* mute */
   --text-active-color: oklch(var(--text-lum) 0.015 var(--text-hue));
   --text-inactive-color: oklch(var(--text-lum) 0.015 var(--text-hue));
   /* contrast both bg and text, helped by elem-border-color */
-  --elem-bg-color: oklch(calc(var(--main-lum) + 9%) 0.015 var(--main-hue)); 
-  --elem-bg-inactive-color: oklch(calc(var(--main-lum) + 1%) 0.015 var(--main-hue));
+  --elem-bg-color: oklch(calc(var(--main-lum-dark) + 9%) 0.015 var(--main-hue));
+  --elem-bg-inactive-color: oklch(calc(var(--main-lum-dark) + 1%) 0.015 var(--main-hue));
   /* use the contrasting accent */
-  --elem-highlight-active-color: oklch(calc(var(--main-lum) + 36%) 0.182 var(--accent-hue));
-  --elem-highlight-inactive-color: oklch(calc(var(--main-lum) + 18%) 0.06 var(--accent-hue));
+  --elem-highlight-active-color: oklch(calc(var(--main-lum-dark) + 36%) 0.182 var(--accent-hue));
+  --elem-highlight-inactive-color: oklch(calc(var(--main-lum-dark) + 18%) 0.06 var(--accent-hue));
   /* just enough to not notice */
-  --elem-border-color: oklch(calc(var(--main-lum) - 3%) 0.015 var(--main-hue));
-  --separator-color: oklch(calc(var(--main-lum) + 4%)  0.015 var(--main-hue));
+  --elem-border-color: oklch(calc(var(--main-lum-dark) - 3%) 0.015 var(--main-hue));
+  --separator-color: oklch(calc(var(--main-lum-dark) + 4%) 0.015 var(--main-hue));
 }
 
 .theme-light {
   --main-hue: 310.6;
-  --main-lum: 84.8%; 
   --text-lum: 5%;
   --text-hue: 220.5;
-  --accent-hue: 267.9; /* contrast with the main, enough chroma when dark */
-  --bg-color: oklch(var(--main-lum) 0.009 var(--main-hue)); /* mute */
+  --accent-hue: 267.9;
+  /* contrast with the main, enough chroma when dark */
+  --bg-color: oklch(var(--main-lum-light) 0.009 var(--main-hue));
+  /* mute */
   --text-active-color: oklch(var(--text-lum) 0.015 var(--text-hue));
   --text-inactive-color: oklch(var(--text-lum) 0.015 var(--text-hue));
   /* contrast both bg and text, helped by elem-border-color */
-  --elem-bg-color: oklch(calc(var(--main-lum) + 9%) 0.009 var(--main-hue)); 
-  --elem-bg-inactive-color: oklch(calc(var(--main-lum) + 1%) 0.010 var(--main-hue));
+  --elem-bg-color: oklch(calc(var(--main-lum-light) + 9%) 0.009 var(--main-hue));
+  --elem-bg-inactive-color: oklch(calc(var(--main-lum-light) + 1%) 0.010 var(--main-hue));
   /* use the contrasting accent */
-  --elem-highlight-active-color: oklch(calc(var(--main-lum) - 36%) 0.20 var(--accent-hue));
-  --elem-highlight-inactive-color: oklch(calc(var(--main-lum) - 18%) 0.06 var(--accent-hue));
+  --elem-highlight-active-color: oklch(calc(var(--main-lum-light) - 36%) 0.20 var(--accent-hue));
+  --elem-highlight-inactive-color: oklch(calc(var(--main-lum-light) - 18%) 0.06 var(--accent-hue));
   /* just enough to not notice */
-  --elem-border-color:oklch(calc(var(--main-lum) - 8%) 0.009 var(--main-hue)); 
-  --separator-color: oklch(calc(var(--main-lum) - 4%) 0.015 var(--main-hue));
+  --elem-border-color: oklch(calc(var(--main-lum-light) - 8%) 0.009 var(--main-hue));
+  --separator-color: oklch(calc(var(--main-lum-light) - 4%) 0.015 var(--main-hue));
 }
 
- @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
   .theme-system {
     --main-hue: 267.5;
-    --main-lum: 28.3%; 
     --text-lum: 95%;
-    --text-hue: 220.5; /* less red than the main */
-    --accent-hue: 45.2; /* contrast with the main */
-    --bg-color: oklch(var(--main-lum) 0.010 var(--main-hue)); /* mute */
+    --text-hue: 220.5;
+    /* less red than the main */
+    --accent-hue: 45.2;
+    /* contrast with the main */
+    --bg-color: oklch(var(--main-lum-dark) 0.010 var(--main-hue));
+    /* mute */
     --text-active-color: oklch(var(--text-lum) 0.015 var(--text-hue));
     --text-inactive-color: oklch(var(--text-lum) 0.015 var(--text-hue));
     /* contrast both bg and text, helped by elem-border-color */
-    --elem-bg-color: oklch(calc(var(--main-lum) + 9%) 0.015 var(--main-hue)); 
-    --elem-bg-inactive-color: oklch(calc(var(--main-lum) + 1%) 0.015 var(--main-hue));
+    --elem-bg-color: oklch(calc(var(--main-lum-dark) + 9%) 0.015 var(--main-hue));
+    --elem-bg-inactive-color: oklch(calc(var(--main-lum-dark) + 1%) 0.015 var(--main-hue));
     /* use the contrasting accent */
-    --elem-highlight-active-color: oklch(calc(var(--main-lum) + 36%) 0.182 var(--accent-hue));
-    --elem-highlight-inactive-color: oklch(calc(var(--main-lum) + 18%) 0.06 var(--accent-hue));
+    --elem-highlight-active-color: oklch(calc(var(--main-lum-dark) + 36%) 0.182 var(--accent-hue));
+    --elem-highlight-inactive-color: oklch(calc(var(--main-lum-dark) + 18%) 0.06 var(--accent-hue));
     /* just enough to not notice */
-    --elem-border-color: oklch(calc(var(--main-lum) - 3%) 0.015 var(--main-hue));
-    --separator-color: oklch(calc(var(--main-lum) + 4%)  0.015 var(--main-hue));
+    --elem-border-color: oklch(calc(var(--main-lum-dark) - 3%) 0.015 var(--main-hue));
+    --separator-color: oklch(calc(var(--main-lum-dark) + 4%) 0.015 var(--main-hue));
   }
 }
 
 @media (prefers-color-scheme: light) {
   .theme-system {
     --main-hue: 310.6;
-    --main-lum: 84.8%; 
     --text-lum: 5%;
     --text-hue: 220.5;
-    --accent-hue: 267.9; /* contrast with the main, enough chroma when dark */
-    --bg-color: oklch(var(--main-lum) 0.009 var(--main-hue)); /* mute */
+    --accent-hue: 267.9;
+    /* contrast with the main, enough chroma when dark */
+    --bg-color: oklch(var(--main-lum-light) 0.009 var(--main-hue));
+    /* mute */
     --text-active-color: oklch(var(--text-lum) 0.015 var(--text-hue));
     --text-inactive-color: oklch(var(--text-lum) 0.015 var(--text-hue));
     /* contrast both bg and text, helped by elem-border-color */
-    --elem-bg-color: oklch(calc(var(--main-lum) + 9%) 0.009 var(--main-hue)); 
-    --elem-bg-inactive-color: oklch(calc(var(--main-lum) + 1%) 0.010 var(--main-hue));
+    --elem-bg-color: oklch(calc(var(--main-lum-light) + 9%) 0.009 var(--main-hue));
+    --elem-bg-inactive-color: oklch(calc(var(--main-lum-light) + 1%) 0.010 var(--main-hue));
     /* use the contrasting accent */
-    --elem-highlight-active-color: oklch(calc(var(--main-lum) - 36%) 0.20 var(--accent-hue));
-    --elem-highlight-inactive-color: oklch(calc(var(--main-lum) - 18%) 0.06 var(--accent-hue));
+    --elem-highlight-active-color: oklch(calc(var(--main-lum-light) - 36%) 0.20 var(--accent-hue));
+    --elem-highlight-inactive-color: oklch(calc(var(--main-lum-light) - 18%) 0.06 var(--accent-hue));
     /* just enough to not notice */
-    --elem-border-color:oklch(calc(var(--main-lum) - 8%) 0.009 var(--main-hue)); 
-    --separator-color: oklch(calc(var(--main-lum) - 4%) 0.015 var(--main-hue));
+    --elem-border-color: oklch(calc(var(--main-lum-light) - 8%) 0.009 var(--main-hue));
+    --separator-color: oklch(calc(var(--main-lum-light) - 4%) 0.015 var(--main-hue));
   }
 }
 
@@ -143,13 +160,4 @@ h1 {
 .elem {
   /* min-width: 3rem; */
   /* min-height: 3rem; */
-}
-
-.dyntext input {
-  border: 10px solid #5B6DCD;
-  padding: 5px;
-}
-
-.dyntext input:focus {
-  outline: none;
 }

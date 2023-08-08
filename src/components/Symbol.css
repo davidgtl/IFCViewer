@@ -1,0 +1,10 @@
+
+.symbol {
+  display: inline;
+  vertical-align: text-bottom;
+  height: 1.25rem;
+  width: 1.25rem;
+  fill: var(--text-inactive-color);
+  z-index: 5;
+  position: relative;
+}

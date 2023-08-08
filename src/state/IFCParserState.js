@@ -1,8 +1,8 @@
-import { makeObservable, action, autorun, reaction } from "mobx"
+import { makeObservable, action, reaction } from "mobx"
 import * as tjs from 'three'
-import { clampCircular, TAU, TAU4 } from "@/mathUtils"
-import { ACTION, hsTrack } from "./history"
+import registerModule from "@/framework/registerModule"
 import triangulatePotato from "@/algo/triangulatePotato"
+
 
 class IFCParserState {
 
@@ -14,9 +14,15 @@ class IFCParserState {
     this.faces = null
     this.count = 0
 
+    this._module = registerModule(root, parent, this, {
+      actions: {
+        loadFromURL: {
+          symbolName: null
+        }
+      }
+    })
     makeObservable(this, {
       fileContent: true,
-      loadFromURL: true,
       processContent: true,
     })
 

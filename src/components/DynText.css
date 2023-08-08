@@ -1,0 +1,8 @@
+.dyntext input {
+  border: 10px solid #5B6DCD;
+  padding: 5px;
+}
+
+.dyntext input:focus {
+  outline: none;
+}

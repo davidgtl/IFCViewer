@@ -83,58 +83,70 @@ class ActionHistory {
 
 }
 
-function hsTrack(target, props) {
+
+function trackAction(target, action) {
   /*
     props.keys() -> { propKey: History(target, target[propKey]), ... }
     + auto record on call
   */
-  var history = {}
+  const func = action
+
+  var history = new ActionHistory(target, func)
+
+
+  function wrapper(...args) {
+    history.record(args)
+    return func.call(target, ...args)
+  }
+
+  /*
+    (options, default):     
+      isTracked:          true        -- record the arguments
+      isOverwrite:        false       -- record call by overwriting the one at current pointer
+      isDummyCall:        false       -- don't call the action
+      isArgsFromPrev:     false       -- use previous arguments instead, if possible
+  */
+  wrapper.trackWith = (options) => {
+
+    const tracking = fn.condShort(
+      [options.isTracked === false, (args) => { }],
+      [options.isOverwrite, (args) => history.recordInPlace(args)],
+      [true, (args) => history.record(args)]
+    )
+
+    const calling = fn.condShort(
+      [options.isDummyCall, (args) => { }],
+      [true, (args) => func.apply(target, args)]
+    )
+
+    const argumenting = fn.condShort(
+      [options.isArgsFromPrev, (args) => history.peekPrev()?.args ?? args],
+      [true, (args) => args]
+    )
+
+    return (...args) => {
+      const currentArgs = argumenting(args)
+      tracking(currentArgs)
+      return calling(currentArgs)
+    }
+  }
+
+  wrapper.history = history
+
+  return wrapper
+}
+
+
+function track(target, props) {
+  /*
+    props.keys() -> { propKey: History(target, target[propKey]), ... }
+    + auto record on call
+  */
 
   for (const key in props) {
     if (props[key] === ACTION) {
-      const func = target[key]
 
-      history[key] = new ActionHistory(target, func)
-
-      function wrapper(...args) {
-        history[key].record(args)
-        return func.call(target, ...args)
-      }
-
-      /*
-        (options, default):     
-          isTracked:          true        -- record the arguments
-          isOverwrite:        false       -- record call by overwriting the one at current pointer
-          isDummyCall:        false       -- don't call the action
-          isArgsFromPrev:     false       -- use previous arguments instead, if possible
-      */
-      wrapper.trackWith = (options) => {
-
-        const tracking = fn.condShort(
-          [options.isTracked === false, (args) => { }],
-          [options.isOverwrite, (args) => history[key].recordInPlace(args)],
-          [true, (args) => history[key].record(args)]
-        )
-
-        const calling = fn.condShort(
-          [options.isDummyCall, (args) => { }],
-          [true, (args) => func.apply(target, args)]
-        )
-
-        const argumenting = fn.condShort(
-          [options.isArgsFromPrev, (args) => history[key].peekPrev()?.args ?? args],
-          [true, (args) => args]
-        )
-
-        return (...args) => {
-          const currentArgs = argumenting(args)
-          tracking(currentArgs)
-          return calling(currentArgs)
-        }
-      }
-      
-      target[key] = wrapper
-      target.history = history
+      target[key] = trackAction(target, target[key])
 
     } else {
       throw new Error('Not Implemented')
@@ -144,4 +156,4 @@ function hsTrack(target, props) {
   return history
 }
 
-export { ACTION, VALUE, hsTrack }
+export default { ACTION, VALUE, trackAction, track }

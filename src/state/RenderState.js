@@ -1,11 +1,11 @@
-import { makeObservable, autorun, action } from "mobx"
+import { action } from "mobx"
 import * as tjs from 'three'
+import registerModule from "@/framework/registerModule"
 import { clampCircular, TAU, TAU2, TAU4 } from "@/mathUtils"
-import { ACTION, hsTrack } from "./history"
 
 class RenderState {
 
-  constructor(root) {
+  constructor(root, parent) {
     this.root = root
 
     // renderer
@@ -59,15 +59,14 @@ class RenderState {
         this.orbitStartCamAngle.copy(this.cameraAngle)
 
         // insert sentinel action to be updated by mousemove
-        this.updateCamAngle.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
+        this._module.updateCamAngle.action.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
       } else if (this.isPanMode) {
         this.isPanning = true
-        console.log("this.isPanning")
 
         const offT = e.target.getBoundingClientRect()
         this.panStartMousePos.set(e.screenX, e.screenY)
         this.panStartPos.copy(this.focusPoint)
-        this.panSpeed.set(0.003*this.focusDistance, 0.003*this.focusDistance)
+        this.panSpeed.set(0.003 * this.focusDistance, 0.003 * this.focusDistance)
 
         const forward = new tjs.Vector3().copy(this.focusPoint).sub(this.camera.position)
         this.panUnitX.crossVectors(new tjs.Vector3(0, 1, 0), forward).normalize()
@@ -94,7 +93,7 @@ class RenderState {
         this.cameraAngle.copy(this.orbitStartCamAngle).add(mouseDelta)
 
         // on a sphere: TAU x = full ecuator, -TAU4 y = south pole, TAU4 y = north pole
-        this.updateCamAngle.trackWith({ isOverwrite: true })(
+        this._module.updateCamAngle.action.trackWith({ isOverwrite: true })(
           clampCircular(this.cameraAngle.x, 0, TAU),
           tjs.MathUtils.clamp(this.cameraAngle.y, -TAU4, TAU4)
         )
@@ -148,10 +147,13 @@ class RenderState {
     this.theMesh = new tjs.Mesh(geometry, material)
     this.scene.add(this.theMesh)
 
-    root.registerModule(root, this, {
+    this._module = registerModule(root, parent, this, {
       actions: {
         render: {
           symbolName: null
+        },
+        invalidate: {
+          symbolName: null,
         },
         randomCameraAngle: {},
         updateCamAngle: {
@@ -181,9 +183,9 @@ class RenderState {
           symbolName: "orbit",
           onToggle: action(() => { //TODO: create a mutex group
             if (!this.isOrbitMode) {
-              this.props.isPanMode.value = false
+              this._module.isPanMode.obs = false
             }
-            this.props.isOrbitMode.value = !this.isOrbitMode
+            this._module.isOrbitMode.obs = !this.isOrbitMode
           })
         },
         isPanMode: {
@@ -191,10 +193,20 @@ class RenderState {
           symbolName: "pan",
           onToggle: action(() => {
             if (!this.isPanMode) {
-              this.props.isOrbitMode.value = false
+              this._module.isOrbitMode.obs = false
             }
-            this.props.isPanMode.value = !this.isPanMode
+            this._module.isPanMode.obs = !this.isPanMode
           })
+        },
+        focusDistance: {
+          symbolName: null,
+          valueMin: 0,
+          valueMax: 100,
+          valueStep: 0.1, //TODO: relative values
+          onUpdate: (valueOld, valueNew) => {
+            this.updateCamera()
+            this.invalidate()
+          }
         }
       }
     })
@@ -203,7 +215,7 @@ class RenderState {
     // autorun(() => { if (this.props.isOrbitMode) this.props.isPanMode = false })
 
     // initialize history with dummy call of current value
-    this.updateCamAngle.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
+    this._module.updateCamAngle.action.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
 
     this._queueRender()
   }
@@ -219,11 +231,11 @@ class RenderState {
   }
 
   prevCamAngle() {
-    this.history.updateCamAngle.tryPrev().call()
+    this._module.updateCamAngle.action.history.tryPrev().call()
   }
 
   nextCamAngle() {
-    this.history.updateCamAngle.tryNext().call()
+    this._module.updateCamAngle.action.history.tryNext().call()
   }
 
   updateCamAngle(x, y) {
@@ -233,19 +245,19 @@ class RenderState {
   }
 
   zoomIn() {
-    this.focusDistance *= 0.9
+    this._module.focusDistance.obs = this.focusDistance * 0.9
     this.updateCamera()
     this.invalidate()
   }
 
   zoomOut() {
-    this.focusDistance *= 1.11112 // this * 0.9 ~ 1
+    this._module.focusDistance.obs = this.focusDistance * 1.11112 // 1.11112 * 0.9 ~ 1
     this.updateCamera()
     this.invalidate()
   }
 
   randomCameraAngle() {
-    this.updateCamAngle(Math.random() * TAU, Math.random() * TAU2 - TAU4)
+    this._module.updateCamAngle.action(Math.random() * TAU, Math.random() * TAU2 - TAU4)
   }
 
   focusObject() {
@@ -256,7 +268,7 @@ class RenderState {
     const bsphere = new tjs.Sphere()
     bbox.getBoundingSphere(bsphere)
 
-    this.focusDistance = bsphere.radius;
+    this._module.focusDistance.obs = bsphere.radius;
 
     this.updateCamera()
     this.invalidate()
@@ -264,7 +276,6 @@ class RenderState {
 
   normalizeObject() {
 
-    console.log(this.scene.children)
     // find bounding box and a safe radius
     const bbox = new tjs.Box3().setFromObject(this.scene.children.at(-1))
     const size = new tjs.Vector3()
@@ -272,18 +283,12 @@ class RenderState {
     const sizeMax = Math.max(size.x, size.y, size.z)
     this.scene.children.at(-1).scale.set(10 / sizeMax, 10 / sizeMax, 10 / sizeMax)
 
-   console.log("scale", this.scene.children.at(-1).scale)
-
     this.invalidate()
-  }
-
-  get domElement() {
-    return this.renderer.domElement
   }
 
   _queueRender() {
     // call render once on next browser redraw
-    requestAnimationFrame(() => this.render())
+    requestAnimationFrame(() => this._module.render.action())
   }
 
   invalidate() {
@@ -296,7 +301,7 @@ class RenderState {
   render() {
     this.renderer.render(this.scene, this.camera)
 
-    this.root.props.count.value = this.root.count + 1
+    this.root.count.obs = this.root.count.value + 1
     this.renderIsQueued = false
   }
 
