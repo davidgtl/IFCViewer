@@ -3,6 +3,7 @@ import { useRef, useState, useEffect, cloneElement, forwardRef } from 'react'
 import Splitter from '@/components/Splitter'
 import fn from '@/fn'
 import "./DynPanel.css"
+import rootState from "@/state/rootState"
 
 /**
   Dynamic Panel
@@ -16,7 +17,7 @@ import "./DynPanel.css"
   insert movable splitter between them
 
 */
-const DynPanel = ({ style, flexBasis, children, flow, isMutex = false, anchor }) => {
+const DynPanel = ({ presenter = rootState.ui, style, flexBasis, children, flow, isMutex = false, anchor }) => {
 
   const containerRef = useRef(null)
   const percentages = useRef([])
@@ -38,7 +39,7 @@ const DynPanel = ({ style, flexBasis, children, flow, isMutex = false, anchor })
   }, [getComputedStyle(document.documentElement).fontSize])
   useEffect(() => {
     // TODO: extract 4rem as default ui unit and 0.3rem ad default padding
-    percentages.current = children instanceof Array ? children.map((x) => x.props.flexBasis ?? 3.2) : [3.2]
+    percentages.current = children instanceof Array && children.every(x => x.type == DynPanel) ? children.map((x) => x.props.flexBasis ?? 3.2) : [3.2]
   }, [])
 
   return (
@@ -62,7 +63,8 @@ const DynPanel = ({ style, flexBasis, children, flow, isMutex = false, anchor })
             ch => [...fn.weave(ch,
               (a, b) => fn.isnun(a, b), (a, b, i) => (
                 <Splitter key={2 * i + 1}
-                  remUnit={REM.current}
+                  presenter={presenter}
+                  remUnit={REM.current} //FIXME: move to UIState and watch font-size
                   containerLength={containerLength}
                   getPrev={() => percentages.current[i]}
                   getNext={() => percentages.current[i + 1]}

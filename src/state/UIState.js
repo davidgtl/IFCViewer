@@ -27,7 +27,7 @@ class UIState {
 
     this.unit = "rem"
     this.vUnit = 1.0 // rem
-    this.iUnit = 2.0 // rem
+    this.iUnit = 3.0 // rem
 
     this._module = registerModule(root, parent, this, {
       actions: {
@@ -41,8 +41,8 @@ class UIState {
             if (!this.isThemeLight) {
               this._module.isThemeDark.obs = false
               this._module.isThemeSystem.obs = false
+              this._module.isThemeLight.obs = !this.isThemeLight
             }
-            this._module.isThemeLight.obs = !this.isThemeLight
           })
         },
         isThemeDark: {
@@ -52,8 +52,8 @@ class UIState {
             if (!this.isThemeDark) {
               this._module.isThemeLight.obs = false
               this._module.isThemeSystem.obs = false
+              this._module.isThemeDark.obs = !this.isThemeDark
             }
-            this._module.isThemeDark.obs = !this.isThemeDark
           })
         },
         isThemeSystem: {
@@ -63,8 +63,8 @@ class UIState {
             if (!this.isThemeSystem) {
               this._module.isThemeLight.obs = false
               this._module.isThemeDark.obs = false
+              this._module.isThemeSystem.obs = !this.isThemeSystem
             }
-            this._module.isThemeSystem.obs = !this.isThemeSystem
           })
         },
         isConfigUI: {
@@ -77,34 +77,55 @@ class UIState {
         vUnit: {
           name: "Visual Unit",
           symbolName: null,
-          valueMin: 0.1, // rem
-          valueMax: 10.0, // rem 
-          valueStep: 0.1
+          valueMin: 0.3, // rem
+          valueMax: 3.0, // rem 
+          valueStep: 0.005,
+          onUpdate: (value) => {
+            document.documentElement.style.setProperty('--vUnit', value + "rem");
+          }
         },
         iUnit: {
           name: "Interaction Unit",
           symbolName: null,
-          valueMin: 0.1, // rem
-          valueMax: 10.0, // rem 
-          valueStep: 0.1
+          valueMin: 1, // rem
+          valueMax: 10, // rem 
+          valueStep: 0.005,
+          onUpdate: (value) =>{
+            document.documentElement.style.setProperty('--iUnit', value + "rem");
+          }
         },
       },
       comps: {
         paddingLeft: {
           symbolName: null,
-          obs: () => (this.iUnit - this.vUnit) * 0.5
+          //TODO: abstract this pattern
+          obs: () => Math.max(0, (this._module.iUnit.obs - this._module.vUnit.obs) * 0.5),
+          value: () => Math.max(0, (this.iUnit - this.vUnit) * 0.5)
         },
         paddingRight: {
           symbolName: null,
-          obs: () => (this.iUnit - this.vUnit) * 0.5
+          obs: () => Math.max(0, (this._module.iUnit.obs - this._module.vUnit.obs) * 0.5),
+          value: () => Math.max(0, (this.iUnit - this.vUnit) * 0.5)
         },
         paddingTop: {
           symbolName: null,
-          obs: () => (this.iUnit - this.vUnit) * 0.5
+          obs: () => Math.max(0, (this._module.iUnit.obs - this._module.vUnit.obs) * 0.5),
+          value: () => Math.max(0, (this.iUnit - this.vUnit) * 0.5)
         },
         paddingBottom: {
           symbolName: null,
-          obs: () => (this.iUnit - this.vUnit) * 0.5
+          obs: () => Math.max(0, (this._module.iUnit.obs - this._module.vUnit.obs) * 0.5),
+          value: () => Math.max(0, (this.iUnit - this.vUnit) * 0.5)
+        },
+        elemWidth: {
+          symbolName: null,
+          obs: () => Math.max(this._module.iUnit.obs, this._module.vUnit.obs),
+          value: () => Math.max(this.iUnit, this.vUnit)
+        },
+        elemHeight: {
+          symbolName: null,
+          obs: () => Math.max(this._module.iUnit.obs, this._module.vUnit.obs),
+          value: () => Math.max(this.iUnit, this.vUnit)
         }
       },
       children: {
@@ -112,6 +133,12 @@ class UIState {
       }
 
     })
+
+
+    // trigger an initial update 
+    // TODO: add a flag/hook for this pattern
+    this._module.vUnit.obs = this.vUnit
+    this._module.iUnit.obs = this.iUnit
 
   }
 }

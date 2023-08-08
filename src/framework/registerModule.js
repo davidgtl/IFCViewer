@@ -122,6 +122,37 @@ function registerModule(root, parent, target, specs) {
           * @default:  propName; null to ommit
           */
           symbolName: "someOtherName",
+
+          /**
+          *  triggered by DynFlag onClick
+          *  meant to alternate between true and false
+          *  current prop is available as `this` 
+          * @default:  undefined
+          * @example
+          *  [ onToggle === undefined, () => undefined]
+          *  [ onToggle === true, action(()=> prop.obs = !prop.value)]
+          *  [ true, onToggle ]
+          */
+          onToggle: true,
+
+          /**
+          *  triggered only when prop.obs is assigned a (tracked) value
+          * 
+          * @default:  undefined
+          * @example
+          *  [ onToggle === undefined, () => undefined]
+          *  [ onToggle === true, action(()=> prop.obs = !prop.value)]
+          *  [ true, onToggle ]
+          */
+          onUpdate: (valueNew, valueOld) => { },
+
+          /**
+          *  used by various UI range elements like DynSlider
+          *  assumes the same measurement unit as prop.value 
+          */
+          valueMin: 0.1,
+          valueMax: 10.0,
+          valueStep: 0.1,
         }
       }
     })
@@ -194,7 +225,6 @@ function registerModule(root, parent, target, specs) {
       history: null,
       symbolName: propName,
       symbolId: prop.symbolName === null ? null : `#symbol_${prop.symbolName ?? propName}`,
-      onToggle: false,
       onUpdate: () => { },
     })
 
@@ -215,7 +245,7 @@ function registerModule(root, parent, target, specs) {
 
     prop.onToggle = fn.condShort(
       [prop.onToggle === true, action(() => {
-        prop.value = !prop.value
+        prop.obs = !prop.value
       })],
       [prop.onToggle !== undefined, prop.onToggle],
       [true, () => undefined]

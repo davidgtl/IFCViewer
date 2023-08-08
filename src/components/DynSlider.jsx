@@ -42,7 +42,7 @@ const DynSlider = observer(({ property, presenter }) => {
   // useState causes lag in move events
   const startPos = useRef({ x: 0, y: 0 })
   const startValue = useRef(0)
-  const isDragging = useRef(false)
+  const [isDragging, setIsDragging] = useState(false)
   const isRelative = useRef(false)
 
   /*
@@ -60,9 +60,9 @@ const DynSlider = observer(({ property, presenter }) => {
     runInAction(() => {
       // console.log(valueAbs)
       property.obs = fn.pipe(valueAbs,
-        (x) => clamp(x, 0, 1), // discard pointer values outside the slider region
         (x) => lerp(x, property.valueMin, property.valueMax), // map [0,1] -> [min, max]
-        (x) => floorStep(x, property.valueMin, property.valueStep) // discretize to valueMin + k * valueStep 
+        (x) => floorStep(x, property.valueMin, property.valueStep), // discretize to valueMin + k * valueStep 
+        (x) => clamp(x, property.valueMin, property.valueMax)
       )
     })
 
@@ -78,7 +78,9 @@ const DynSlider = observer(({ property, presenter }) => {
       )
 
       runInAction(() => {
-        property.obs = fn.pipe(startValue.current + deltaAbs / presenter.iUnit.value,
+        // 1 iUnit = 1 tick
+        property.obs = fn.pipe(
+          startValue.current + (deltaAbs / presenter.iUnit.value) * property.valueStep,
           (x) => floorStep(x, property.valueMin, property.valueStep), // discretize to valueMin + k * valueStep 
           (x) => clamp(x, property.valueMin, property.valueMax) // stop at min and max
         )
@@ -89,7 +91,7 @@ const DynSlider = observer(({ property, presenter }) => {
   }
 
   const onMouseUp = (e) => {
-    isDragging.current = false
+    setIsDragging(false)
 
     removeEventListener("mousemove", onMouseMove)
     removeEventListener("mouseup", onMouseUp)
@@ -98,7 +100,7 @@ const DynSlider = observer(({ property, presenter }) => {
   }
 
   const onMouseDown = (e) => {
-    isDragging.current = true
+    setIsDragging(true)
     startValue.current = property.value
 
     document.body.style.cursor = presenter.flow.value == "row" ? 'ew-resize' : "ns-resize"
@@ -123,11 +125,17 @@ const DynSlider = observer(({ property, presenter }) => {
   */
 
   return (
-    <div className={"slider " + presenter.flow.value} tabIndex={0} onMouseDown={onMouseDown}>
+    <div className={"slider " + presenter.flow.value} tabIndex={0} onMouseDown={onMouseDown}
+      style={{
+        width: (
+          presenter.elemWidth.obs() // knob
+          + presenter.contentWidth.obs() // trackBar 
+        ) + "rem"
+      }}>
       <div className="slider_knob" style={{
 
-        left: presenter.contentLeftAt.obs(valueRel) + "rem",
-        backgroundColor: isDragging.current
+        left: (presenter.contentLeftAt.obs(valueRel) - presenter.paddingLeft.obs()) + "rem",
+        backgroundColor: isDragging
           ? "var(--elem-highlight-active-color)"
           : "var(--elem-highlight-inactive-color)",
       }}>
@@ -135,8 +143,6 @@ const DynSlider = observer(({ property, presenter }) => {
       </div>
       <div className="slider_trackBar" ref={trackBarRef}
         style={{
-          left: (presenter.paddingLeft.obs() + presenter.vUnit.obs) + "rem",
-          top: presenter.contentTopAt.obs(0.5) + "rem",
           width: presenter.contentWidth.obs() + "rem"
         }} />
     </div >

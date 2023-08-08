@@ -34,6 +34,13 @@ body {
   min-height: max-content;
   min-width: max-content;
   background: var(--bg-color);
+
+  --paddingLeft: calc(max(0px, var(--iUnit) - var(--vUnit)) * 0.5);
+  --paddingRight: calc(max(0px, var(--iUnit) - var(--vUnit)) * 0.5);
+  --paddingTop: calc(max(0px, var(--iUnit) - var(--vUnit)) * 0.5);
+  --paddingBottom: calc(max(0px, var(--iUnit) - var(--vUnit)) * 0.5);
+  --elemHeight: calc(max(var(--iUnit), var(--vUnit)));
+  --elemWidth: calc(max(var(--iUnit), var(--vUnit)));
 }
 
 .elem {
@@ -153,13 +160,4 @@ h1 {
 .elem {
   /* min-width: 3rem; */
   /* min-height: 3rem; */
-}
-
-.dyntext input {
-  border: 10px solid #5B6DCD;
-  padding: 5px;
-}
-
-.dyntext input:focus {
-  outline: none;
 }

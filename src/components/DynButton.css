@@ -1,16 +1,18 @@
 button {
   display: inline-flex;
+  box-sizing: border-box;
+  
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
 
-  font-size: 1rem;
+  font-size: var(--vUnit);
 
   background-color: var(--elem-bg-color);
   fill: var(--text-inactive-color);
-  height: 3rem;
+  height: var(--elemHeight);
   width: max-content;
-  padding: 0rem 1rem;
+  padding: var(--paddingTop) var(--paddingRight) var(--paddingBottom) var(--paddingLeft);
 
   border: 1px solid var(--elem-border-color);
   border-radius: 0.5rem;

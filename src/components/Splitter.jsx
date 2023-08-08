@@ -1,5 +1,6 @@
 import { observer } from "mobx-react"
 import { useRef, useEffect } from 'react'
+import { floorStep } from "@/mathUtils"
 import "./Splitter.css"
 
 /**
@@ -7,19 +8,22 @@ import "./Splitter.css"
   
   adjusts the percentange of the prev/next panels
 */
-const Splitter = ({ remUnit, containerLength, getPrev, getNext, updatePrev, updateNext, flow = "row" }) => {
+const Splitter = ({ presenter, remUnit, containerLength, getPrev, getNext, updatePrev, updateNext, flow = "row" }) => {
 
+  // TODO:  move flow to presenter? 
   const startPos = useRef({ x: 0, y: 0 })
   const startValues = useRef([0, 0])
 
 
   const onMouseMove = (e) => {
     e.preventDefault()
-    const delta = flow == "row" ? e.screenX - startPos.x : e.screenY - startPos.y
-    // const deltaRelative = delta / remUnit
-    updatePrev(startValues[0] + Math.floor(delta / remUnit))
-    updateNext(startValues[1] - Math.floor(delta / remUnit))
-    console.log("remUnit", remUnit, "delta", delta)
+    const valueAbs = flow == "row" ? e.screenX - startPos.x : e.screenY - startPos.y
+    const valueAbsRem = valueAbs / remUnit
+    
+    // TODO: nice snapping for cuurent elemWidth/Height
+    // updatePrev(floorStepstartValues[0] + valueAbsRem, 0, presenter.elemHeight.value()*1.1))
+    updatePrev(startValues[0] + valueAbsRem)
+    updateNext(startValues[1] - valueAbsRem)
   }
   const onMouseUp = (e) => {
     removeEventListener("mousemove", onMouseMove)

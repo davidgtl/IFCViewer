@@ -39,7 +39,7 @@ const App = observer(({ }) => {
             <div key={k} dangerouslySetInnerHTML={svgs[k]} />
           ))}
         </div>
-       <DynPanel flow="col" style={{ width: "min(100vw, 60rem)" }} >
+        <DynPanel flow="col" style={{ width: "min(100vw, 60rem)" }} >
           <DynPanel flow="row" anchor="end">
             <DynPanel flow="row" isMutex={true}>
               <DynFlag property={rootState.ui.isThemeLight} />
@@ -48,7 +48,11 @@ const App = observer(({ }) => {
             </DynPanel>
             <DynFlag property={rootState.ui.isConfigUI} />
           </DynPanel>
-          <DynPanel flow="row">
+          <DynPanel flow="row" isVisible={rootState.ui.isConfigUI.obs}>
+            {"Visual Unit:"}
+            <DynSlider property={rootState.ui.vUnit} presenter={rootState.ui.presenters.standardSlider} />
+            {"Interaction Unit:"}
+            <DynSlider property={rootState.ui.iUnit} presenter={rootState.ui.presenters.standardSlider} />
           </DynPanel>
           <DynPanel flow="row">
             <DynButton action={rootState.render.randomCameraAngle} />
@@ -73,15 +77,15 @@ const App = observer(({ }) => {
             <h1 style={{ alignSelf: "center" }}>Vite + React</h1>
             <div className="card" style={{ 'maxWidth': '640px' }}>
               <button onClick={() => rootState.render.invalidate.action()}
-              style = {{
-                color: "var(--text-inactive-color)"
-              }}>
+                style={{
+                  color: "var(--text-inactive-color)"
+                }}>
                 render count is {rootState.count.obs}
               </button>
               <DynButton action={rootState.render.invalidate} />
               <DynButton action={rootState.loadLucySample} />
-              <DynButton action={rootState.loadInstituteSample} />
-              <DynButton action={rootState.loadHausSample} />
+              {/* <DynButton action={rootState.loadInstituteSample} /> */}
+              {/* <DynButton action={rootState.loadHausSample} /> */}
               <DynButton action={rootState.loadChurchSample} />
             </div>
             <PerceptualColorSpace />
