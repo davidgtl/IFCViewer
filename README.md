@@ -23,6 +23,9 @@ Built with [Vite](https://vitejs.dev/), [React](https://react.dev/), [MobX](http
  * An SVG embedder build step in [src/plugins/svgSymbols.js](src/plugins/svgSymbols.js)
  * A .obj mini parser in [src/state/OBJParserState.js](src/state/OBJParserState.js)
 
+## Roadmap
+ [todo.md](todo.md)
+ 
 # [License](LICENSE)
 This project: GPLv3 -- do whatever, no guarantees. When distributing your work, attribute and keep it free.
 
