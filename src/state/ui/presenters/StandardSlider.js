@@ -24,7 +24,7 @@ class StandardSliderState {
         },
       },
       comps: {
-        contentWidthRem: {
+        contentWidth: {
           symbolName: null
         },
         contentLeftAt: {
@@ -37,16 +37,16 @@ class StandardSliderState {
     })
   }
 
-  contentWidthRem() {
-    return this.contentWidthVu * this._module.vUnit.value
+  contentWidth() {
+    return this.contentWidthVu * this._module.vUnit.obs
   }
 
   contentLeftAt(percentange) {
-    return this._module.paddingLeftRem.obs() + percentange * this.contentWidthVu * this._module.vUnit.value
+    return this._module.paddingLeft.obs() + percentange * this.contentWidthVu * this._module.vUnit.obs
   }
 
   contentTopAt(percentange) {
-    return (this._module.paddingTopRem.value + percentange * this.contentHeightVu * this._module.vUnit.value)
+    return (this._module.paddingTop.obs() + percentange * this.contentHeightVu * this._module.vUnit.obs)
   }
 
 }

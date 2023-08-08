@@ -58,7 +58,8 @@ const DynSlider = observer(({ property, presenter }) => {
       [presenter.flow.value == "col", (e.clientY - rect.top) / rect.height]
     )
     runInAction(() => {
-      property.value = fn.pipe(valueAbs,
+      // console.log(valueAbs)
+      property.obs = fn.pipe(valueAbs,
         (x) => clamp(x, 0, 1), // discard pointer values outside the slider region
         (x) => lerp(x, property.valueMin, property.valueMax), // map [0,1] -> [min, max]
         (x) => floorStep(x, property.valueMin, property.valueStep) // discretize to valueMin + k * valueStep 
@@ -77,7 +78,7 @@ const DynSlider = observer(({ property, presenter }) => {
       )
 
       runInAction(() => {
-        property.value = fn.pipe(startValue.current + deltaAbs / presenter.iUnit.value,
+        property.obs = fn.pipe(startValue.current + deltaAbs / presenter.iUnit.value,
           (x) => floorStep(x, property.valueMin, property.valueStep), // discretize to valueMin + k * valueStep 
           (x) => clamp(x, property.valueMin, property.valueMax) // stop at min and max
         )
@@ -125,7 +126,7 @@ const DynSlider = observer(({ property, presenter }) => {
     <div className={"slider " + presenter.flow.value} tabIndex={0} onMouseDown={onMouseDown}>
       <div className="slider_knob" style={{
 
-        left: presenter.contentLeftAt.obs(valueRel),
+        left: presenter.contentLeftAt.obs(valueRel) + "rem",
         backgroundColor: isDragging.current
           ? "var(--elem-highlight-active-color)"
           : "var(--elem-highlight-inactive-color)",
@@ -134,9 +135,9 @@ const DynSlider = observer(({ property, presenter }) => {
       </div>
       <div className="slider_trackBar" ref={trackBarRef}
         style={{
-          left: presenter.paddingLeftRem.obs() + "rem",
+          left: (presenter.paddingLeft.obs() + presenter.vUnit.obs) + "rem",
           top: presenter.contentTopAt.obs(0.5) + "rem",
-          width: presenter.contentWidthRem.obs() + "rem"
+          width: presenter.contentWidth.obs() + "rem"
         }} />
     </div >
   )

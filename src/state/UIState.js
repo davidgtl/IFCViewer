@@ -90,19 +90,19 @@ class UIState {
         },
       },
       comps: {
-        paddingLeftRem: {
+        paddingLeft: {
           symbolName: null,
           obs: () => (this.iUnit - this.vUnit) * 0.5
         },
-        paddingRightRem: {
+        paddingRight: {
           symbolName: null,
           obs: () => (this.iUnit - this.vUnit) * 0.5
         },
-        paddingTopRem: {
+        paddingTop: {
           symbolName: null,
           obs: () => (this.iUnit - this.vUnit) * 0.5
         },
-        paddingBottomRem: {
+        paddingBottom: {
           symbolName: null,
           obs: () => (this.iUnit - this.vUnit) * 0.5
         }
