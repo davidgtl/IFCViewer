@@ -5,7 +5,8 @@
 - color space features: iso intensity lines, iso hue lines, uniform luma contrast, uniform chroma constrast
 - add luminosity slider
 - parse index.css oklch to hex with vite
-- UI: coarse-fine slider
+- conditional mutexes: if C toggle A or B else toggle A(on/off)
+
 ----- below this UI requires state per component ------
 - tabs
 - keyboard navigation + vimmode? -- key bindings in actions
