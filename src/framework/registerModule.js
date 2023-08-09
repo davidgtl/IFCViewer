@@ -214,8 +214,8 @@ function registerModule(root, parent, target, specs) {
       get obs() { return this._obs },
       set obs(value) {
         const valueOld = target[propName]
-        prop.onUpdate(value, valueOld)
         target[propName] = value
+        prop.onUpdate(value, valueOld)
         this._obs = value
       },
     }
