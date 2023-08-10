@@ -1,5 +1,4 @@
-.config-ui .panel {
-}
+.config-ui .panel {}
 
 .panel {
   display: inline-flex;
@@ -23,12 +22,12 @@
   align-items: flex-start;
 }
 
-.panel.row>.panel {
+.panel.row>.panel:first-child:last-child {
   box-sizing: border-box;
   height: 100%;
 }
 
-.panel.col>.panel {
+.panel.col>.panel:first-child:last-child {
   box-sizing: border-box;
   width: 100%;
 }

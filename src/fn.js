@@ -50,10 +50,24 @@ function isnn(...array) {
 /**
 *  is defined:
 *  @example
-*  array.every(x => x !== undefined && x !== null)
+*  array.every(x => x !== undefined && x !== null && !isNaN(x))
 */
 function isdef(...array) {
-  return array.every(x => x !== undefined && x !== null)
+  return array.every(x => x !== undefined && x !== null && !isNaN(x))
+}
+
+/**
+*  first defined:
+*  @example
+*  firstDef(NaN, null, 5, 7) == 5
+*/
+function firstDef(...array) {
+  for(const i in array){
+    if(isdef(array[i])){
+      return array[i]
+    }
+  }
+  return undefined
 }
 
 /**
@@ -222,4 +236,4 @@ function inheritFrom(obj, objRef) {
   return obj
 }
 
-export default { condShort, codeDoc, isnun, isnn, isdef, defaultsFor, defaultValue, slice, weave, PATH, getPath, setPath, pipe, inheritFrom }
+export default { condShort, codeDoc, isnun, isnn, isdef, firstDef, defaultsFor, defaultValue, slice, weave, PATH, getPath, setPath, pipe, inheritFrom }

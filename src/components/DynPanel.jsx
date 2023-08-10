@@ -1,5 +1,5 @@
 import { observer } from "mobx-react"
-import { useRef, useState, useEffect, cloneElement, forwardRef } from 'react'
+import { useRef, useState, useEffect, cloneElement, useReducer } from 'react'
 import Splitter from '@/components/Splitter'
 import fn from '@/fn'
 import "./DynPanel.css"
@@ -17,29 +17,26 @@ import rootState from "@/state/rootState"
   insert movable splitter between them
 
 */
-const DynPanel = ({ presenter = rootState.ui, style, flexBasis, children, flow, isMutex = false, anchor }) => {
+const DynPanel = observer(({ presenter = rootState.ui, style, flexBasis, children, flow, isMutex = false, anchor }) => {
 
   const containerRef = useRef(null)
-  const percentages = useRef([])
+  const scales = useRef([])
   const [containerLength, setContainerLength] = useState(0)
-  const [forceUpdateVal, forceUpdate] = useState(0)
-  const REM = useRef(16) // 16px
+  const [_, forceUpdate] = useReducer(() => ({}), {})
 
-  const updatePercentage = (index, value) => {
-    percentages.current[index] = value
-    /* percentages useState doesn't do timely updates, maybe investigate? */
-    forceUpdate(value)
+  const defaultScale = presenter.elemWidth.obs() * 1.1
+  const updateScales = (index, value) => {
+    scales.current[index] = value
+    forceUpdate()
   }
 
   useEffect(() => {
     setContainerLength(flow == "row" ? containerRef.current.clientWidth : containerRef.current.clientHeight)
   })
+
   useEffect(() => {
-    REM.current = parseFloat(getComputedStyle(document.documentElement).fontSize)
-  }, [getComputedStyle(document.documentElement).fontSize])
-  useEffect(() => {
-    // TODO: extract 4rem as default ui unit and 0.3rem ad default padding
-    percentages.current = children instanceof Array && children.every(x => x.type == DynPanel) ? children.map((x) => x.props.flexBasis ?? 3.2) : [3.2]
+    scales.current = children instanceof Array && children.every(x => x.type == DynPanel)
+      ? children.map((x) => x.props.flexBasis ?? 1) : [1]
   }, [])
 
   return (
@@ -58,18 +55,17 @@ const DynPanel = ({ presenter = rootState.ui, style, flexBasis, children, flow, 
         children instanceof Array && children.every(x => x.type == DynPanel) ?
           fn.pipe(children,
             /* inject flexBasis prop into child DynPanels */
-            ch => ch.map((x, i) => cloneElement(x, { key: 2 * i + 0, flexBasis: percentages.current[i] })),
+            ch => ch.map((x, i) => cloneElement(x, { key: 2 * i + 0, flexBasis: scales.current[i] * defaultScale })),
             /* insert a Splitter between every pair of DynPanels */
             ch => [...fn.weave(ch,
               (a, b) => fn.isnun(a, b), (a, b, i) => (
                 <Splitter key={2 * i + 1}
                   presenter={presenter}
-                  remUnit={REM.current} //FIXME: move to UIState and watch font-size
                   containerLength={containerLength}
-                  getPrev={() => percentages.current[i]}
-                  getNext={() => percentages.current[i + 1]}
-                  updatePrev={(value) => updatePercentage(i, value)}
-                  updateNext={(value) => updatePercentage(i + 1, value)}
+                  getPrev={() => scales.current[i]}
+                  getNext={() => scales.current[i + 1]}
+                  updatePrev={(value) => updateScales(i, value)}
+                  updateNext={(value) => updateScales(i + 1, value)}
                   flow={flow} />
               ))
             ]
@@ -78,6 +74,6 @@ const DynPanel = ({ presenter = rootState.ui, style, flexBasis, children, flow, 
       }
     </div >
   )
-}
+})
 
 export default DynPanel

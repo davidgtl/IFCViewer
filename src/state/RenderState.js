@@ -11,7 +11,9 @@ class RenderState {
     // renderer
     this.renderer = new tjs.WebGLRenderer({ antialias: true })
     this.renderIsQueued = false
-    this.renderer.setSize(640, 480)
+    const documentWidth = Number.parseFloat(getComputedStyle(window.document.documentElement).width)*0.9
+    
+    this.renderer.setSize(documentWidth, Math.floor(documentWidth/1.3333))
     this.renderer.useLegacyLights = false
 
     // camera
@@ -38,78 +40,11 @@ class RenderState {
     this.panStartMousePos = new tjs.Vector2()
 
     // input state
-    this.hasMouseFocus = false
     this.keyStates = {
       "Control": false,
       "Alt": false,
       "Shift": false,
     }
-
-    // ui events
-    window.addEventListener('mousedown', (e) => {
-      if (!this.hasMouseFocus) return
-
-      if (this.isOrbitMode) {
-        this.isOrbiting = true
-
-        const offT = e.target.getBoundingClientRect()
-        const offX = e.clientX - offT.left
-        const offY = e.clientY - offT.top
-        this.orbitStartMousePos.set(e.screenX, e.screenY)
-        this.orbitStartCamAngle.copy(this.cameraAngle)
-
-        // insert sentinel action to be updated by mousemove
-        this._module.updateCamAngle.action.trackWith({ isDummyCall: true })(this.cameraAngle.x, this.cameraAngle.y)
-      } else if (this.isPanMode) {
-        this.isPanning = true
-
-        const offT = e.target.getBoundingClientRect()
-        this.panStartMousePos.set(e.screenX, e.screenY)
-        this.panStartPos.copy(this.focusPoint)
-        this.panSpeed.set(0.003 * this.focusDistance, 0.003 * this.focusDistance)
-
-        const forward = new tjs.Vector3().copy(this.focusPoint).sub(this.camera.position)
-        this.panUnitX.crossVectors(new tjs.Vector3(0, 1, 0), forward).normalize()
-        this.panUnitY.crossVectors(forward, this.panUnitX).normalize()
-      }
-
-
-    })
-
-    window.addEventListener('mouseup', (e) => {
-      this.isOrbiting = false
-      this.isPanning = false
-    })
-
-    window.addEventListener('mousemove', (e) => {
-      this.hasMouseFocus = e.target == this.renderer.domElement
-
-      if (this.isOrbiting) {
-
-        // cameraAngle = clamp(cameraAngleStart + mouseDelta * speed) 
-        // -- it's absolute for better responsivity
-        const mouseDelta = new tjs.Vector2(e.screenX, e.screenY).sub(this.orbitStartMousePos)
-        mouseDelta.multiply(this.orbitSpeed)
-        this.cameraAngle.copy(this.orbitStartCamAngle).add(mouseDelta)
-
-        // on a sphere: TAU x = full ecuator, -TAU4 y = south pole, TAU4 y = north pole
-        this._module.updateCamAngle.action.trackWith({ isOverwrite: true })(
-          clampCircular(this.cameraAngle.x, 0, TAU),
-          tjs.MathUtils.clamp(this.cameraAngle.y, -TAU4, TAU4)
-        )
-      } else if (this.isPanning) {
-
-        const mouseDelta = new tjs.Vector2(e.screenX, e.screenY).sub(this.panStartMousePos)
-        mouseDelta.multiply(this.panSpeed)
-        const deltaX = new tjs.Vector3().copy(this.panUnitX).multiplyScalar(mouseDelta.x)
-        const deltaY = new tjs.Vector3().copy(this.panUnitY).multiplyScalar(mouseDelta.y)
-        this.focusPoint.copy(this.panStartPos).add(deltaX).add(deltaY)
-
-        this.updateCamera()
-        this.invalidate()
-
-      }
-    })
 
     window.addEventListener('keydown', (e) => {
       if (e.key in this.keyStates) {
