@@ -19,7 +19,7 @@
 }
 
 .config-ui .splitter.col {
-  height: 0.5rem;
+  height: calc(var(--iUnit) * 0.5);
 }
 
 .splitter.row {
@@ -33,7 +33,7 @@
 }
 
 .config-ui .splitter.row {
-  width: 0.3rem;
+  width: calc(var(--iUnit) * 0.5);
 }
 
 .splitter svg {

@@ -26,8 +26,11 @@ class UIState {
     */
 
     this.unit = "rem"
+    this.rem = 16 // px, updated in App.jsx
     this.vUnit = 1.0 // rem
-    this.iUnit = 3.0 // rem
+    this.iUnit = 2.2 // rem
+    /* DynPanel.css: gap */
+    this.gap = 0.2 // rem
 
     this._module = registerModule(root, parent, this, {
       actions: {
@@ -89,10 +92,18 @@ class UIState {
           symbolName: null,
           valueMin: 1, // rem
           valueMax: 10, // rem 
-          valueStep: 0.005,
-          onUpdate: (value) =>{
+          valueStep: 0.01,
+          onUpdate: (value) => {
             document.documentElement.style.setProperty('--iUnit', value + "rem");
           }
+        },
+        rem: {
+          name: "root font size px",
+          symbolName: null,
+        },
+        gap: {
+          name: "gap between panels",
+          symbolName: null,
         },
       },
       comps: {

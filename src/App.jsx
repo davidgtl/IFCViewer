@@ -6,6 +6,7 @@ import DynPanel from "@/components/DynPanel"
 import DynButton from "@/components/DynButton"
 import DynSlider from "@/components/DynSlider"
 import DynFlag from "@/components/DynFlag"
+import Renderer from "@/components/Renderer"
 import PerceptualColorSpace from "@/components/PerceptualColorSpace"
 import DynText from "@/components/DynText"
 import { svgs } from 'svgSymbols'
@@ -16,13 +17,9 @@ import './App.css'
 
 const App = observer(({ }) => {
 
-  const canvasContainerRef = useRef(null)
-
   useEffect(() => {
-    const container = canvasContainerRef.current
-    container.appendChild(rootState.render._target.renderer.domElement)
-    return () => container.removeChild(rootState.render._target.renderer.domElement)
-  }, [])
+    rootState.ui.rem.obs = parseFloat(getComputedStyle(document.documentElement).fontSize)
+  }, [getComputedStyle(document.documentElement).fontSize])
 
   return (
     <>
@@ -73,9 +70,9 @@ const App = observer(({ }) => {
 
           </DynPanel>
           <DynPanel flow="col" flexBasis={85} style={{ alignItems: "center" }}>
-            <div ref={canvasContainerRef} />
+            <Renderer/>
             <h1 style={{ alignSelf: "center" }}>Vite + React</h1>
-            <div className="card" style={{ 'maxWidth': '640px' }}>
+            <div className="card">
               <button onClick={() => rootState.render.invalidate.action()}
                 style={{
                   color: "var(--text-inactive-color)"

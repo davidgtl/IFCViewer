@@ -3,6 +3,7 @@ import { observer } from "mobx-react"
 import { useRef, useState } from 'react'
 import { lerp, clamp, floorStep } from "@/mathUtils"
 import fn from "@/fn"
+import useGenericPointer from "@/framework/genericPointer"
 import "./DynSlider.css"
 
 /**
@@ -38,94 +39,88 @@ import "./DynSlider.css"
 const DynSlider = observer(({ property, presenter }) => {
 
   const trackBarRef = useRef(null)
+  const elementRef = useRef(null);
 
   // useState causes lag in move events
-  const startPos = useRef({ x: 0, y: 0 })
-  const startValue = useRef(0)
-  const [isDragging, setIsDragging] = useState(false)
   const isRelative = useRef(false)
+  const startValue = useRef(0)
+  const startPos = useRef({ x: 0, y: 0 }).current
+  const startRect = useRef({ }).current
 
-  /*
-    problem: how to update component when contentTopAt(0.5) changes
-  */
+  const [isDragging, setIsDragging] = useState(false)
 
   const valueRange = property.valueMax - property.valueMin
   const valueRel = (property.obs - property.valueMin) / valueRange
-  const updateAbs = (e, rect) => {
+
+  const updateAbs = (e) => {
 
     const valueAbs = fn.condShort(
-      [presenter.flow.value == "row", (e.clientX - rect.left) / rect.width],
-      [presenter.flow.value == "col", (e.clientY - rect.top) / rect.height]
+      [presenter.flow.value == "row", (e.clientX - startRect.left) / startRect.width],
+      [presenter.flow.value == "col", (e.clientY - startRect.top) / startRect.height]
     )
     runInAction(() => {
-      // console.log(valueAbs)
+      // map valueAbs with [0,1] => [valueMin..valueStep..valueMax]
       property.obs = fn.pipe(valueAbs,
         (x) => lerp(x, property.valueMin, property.valueMax), // map [0,1] -> [min, max]
         (x) => floorStep(x, property.valueMin, property.valueStep), // discretize to valueMin + k * valueStep 
-        (x) => clamp(x, property.valueMin, property.valueMax)
+        (x) => clamp(x, property.valueMin, property.valueMax) // don't go out of bounds
       )
     })
-
   }
 
-  const onMouseMove = (e) => {
-    e.preventDefault()
+  useGenericPointer({
+    elementRef: elementRef,
+    onDown: (pointer) => {
+      setIsDragging(true)
+      startValue.current = property.value
 
-    if (isRelative.current) {
-      const deltaAbs = fn.condShort(
-        [presenter.flow.value == "row", e.screenX - startPos.x],
-        [presenter.flow.value == "col", e.screenY - startPos.y]
-      )
+      document.body.style.cursor = presenter.flow.value == "row" ? 'ew-resize' : "ns-resize"
 
-      runInAction(() => {
-        // 1 iUnit = 1 tick
-        property.obs = fn.pipe(
-          startValue.current + (deltaAbs / presenter.iUnit.value) * property.valueStep,
-          (x) => floorStep(x, property.valueMin, property.valueStep), // discretize to valueMin + k * valueStep 
-          (x) => clamp(x, property.valueMin, property.valueMax) // stop at min and max
+      isRelative.current = pointer.target.className.includes("slider_knob")
+      if (isRelative.current) {
+        // save reference point
+        startPos.x = pointer.screenX
+        startPos.y = pointer.screenY
+
+      } else { // if absolute jump directly to position
+        const rect = trackBarRef.current.getBoundingClientRect() 
+        
+        // don't change the startRect reference, just update
+        for(var k of ['width', 'height', 'left', 'top']){
+          startRect[k] = rect[k]
+        }
+        updateAbs(pointer)
+      }
+
+    },
+    onMove: (pointer) => {
+
+      if (isRelative.current) {
+        const deltaAbs = fn.condShort(
+          [presenter.flow.value == "row", pointer.screenX - startPos.x],
+          [presenter.flow.value == "col", pointer.screenY - startPos.y]
         )
-      })
-    } else {
-      updateAbs(e, trackBarRef.current.getBoundingClientRect())
+
+        runInAction(() => {
+          // map distance(startPos, currentPos) with (0.1 iUnit(rem) * px/rem) => 1 valueStep
+          property.obs = fn.pipe(
+            startValue.current + (deltaAbs / (0.1 * presenter.iUnit.value * presenter.rem.value)) * property.valueStep,
+            (x) => floorStep(x, property.valueMin, property.valueStep), // discretize to valueMin + k * valueStep 
+            (x) => clamp(x, property.valueMin, property.valueMax) // don't go out of bounds
+          )
+        })
+      } else {
+        updateAbs(pointer)
+      }
+    },
+    onUp: (e) => {
+      setIsDragging(false)
+      document.body.style.cursor = ''
     }
-  }
-
-  const onMouseUp = (e) => {
-    setIsDragging(false)
-
-    removeEventListener("mousemove", onMouseMove)
-    removeEventListener("mouseup", onMouseUp)
-    document.body.style.cursor = ''
-
-  }
-
-  const onMouseDown = (e) => {
-    setIsDragging(true)
-    startValue.current = property.value
-
-    document.body.style.cursor = presenter.flow.value == "row" ? 'ew-resize' : "ns-resize"
-    addEventListener("mousemove", onMouseMove)
-    addEventListener("mouseup", onMouseUp)
-
-    isRelative.current = e.target.className.includes("slider_knob")
-    if (isRelative.current) {
-      startPos.x = e.screenX
-      startPos.y = e.screenY
-
-    } else { // if absolute jump directly to position
-      updateAbs(e, trackBarRef.current.getBoundingClientRect())
-    }
-
-  }
-  /*
-    TODO: make font feel less squeezed
-    TODO: match the rounded corners
-    TODO: standardize paddings -- UIConfig?
-    TODO: fix on light theme -- introduce active/inactive colors 
-  */
+  })
 
   return (
-    <div className={"slider " + presenter.flow.value} tabIndex={0} onMouseDown={onMouseDown}
+    <div className={"slider " + presenter.flow.value} tabIndex={0} ref={elementRef}
       style={{
         width: (
           presenter.elemWidth.obs() // knob
