@@ -14,6 +14,7 @@ class RenderState {
     const documentWidth = Number.parseFloat(getComputedStyle(window.document.documentElement).width)*0.9
     
     this.renderer.setSize(documentWidth, Math.floor(documentWidth/1.3333))
+    this.renderer.setPixelRatio(window.devicePixelRatio || 1)
     this.renderer.useLegacyLights = false
 
     // camera
